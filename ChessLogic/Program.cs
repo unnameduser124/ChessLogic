@@ -17,7 +17,7 @@ namespace ChessLogic
             {
                 return (char)(cord + 97);
             }
-            var board = new Board.Board("rook");
+            var board = new Board.Board("pawn");
 
             for(int i=0; i<8; i++)
             {
@@ -32,9 +32,9 @@ namespace ChessLogic
             }
             Console.WriteLine("Available moves: ");
 
-            foreach(var move in board.ChessBoard[0,0].availableMoves(0, 0, board))
+            foreach(var move in board.ChessBoard[1,6].availableMoves(board))
             {
-                Console.WriteLine($"R{convertCord(move[0])}{move[1]+1}");
+                Console.WriteLine($"{board.ChessBoard[1,6].Color} Pawn {convertCord(1)}{7} -> {convertCord(move[0])}{move[1]+1}");
             }
 
             Console.ReadLine();

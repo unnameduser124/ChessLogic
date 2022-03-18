@@ -13,6 +13,6 @@ namespace ChessLogic.Pieces
 
         string Color { get; set; }
 
-        List<int []> availableMoves(int x, int y, Board.Board board);
+        List<int []> availableMoves(Board.Board board);
     }
 }

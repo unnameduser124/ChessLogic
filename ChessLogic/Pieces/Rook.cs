@@ -18,90 +18,105 @@ namespace ChessLogic.Pieces
         public string Name { get; set; }
         public string Color { get; set; }
 
-        public List<int []> availableMoves(int x, int y, Board.Board board)
+        public List<int []> availableMoves(Board.Board board)
         {
+            int x = -1, y = -1;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (board.ChessBoard[i, j] == this)
+                    {
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+
             List<int []> availableMoves = new List<int []>();
-
-            //moves horizontally incrementing x
-            for(int i=1; i<8; i++)
+            if (x != -1)
             {
-                if(x + i < 8)
+                //moves horizontally incrementing x
+                for (int i = 1; i < 8; i++)
                 {
-                    if(board.ChessBoard[x + i, y] == null)
+                    if (x + i < 8)
                     {
-                        availableMoves.Add(new int[] { x + i, y });
+                        if (board.ChessBoard[x + i, y] == null)
+                        {
+                            availableMoves.Add(new int[] { x + i, y });
+                        }
+                        else if (board.ChessBoard[x + i, y].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x + i, y });
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else if(board.ChessBoard[x + i, y].Color.ToLower() != Color.ToLower())
+                }
+
+                //moves horizontally decrementing x
+                for (int i = 1; i < 8; i++)
+                {
+                    if (x - i >= 0)
                     {
-                        availableMoves.Add(new int[] { x + i, y });
+                        if (board.ChessBoard[x - i, y] == null)
+                        {
+                            availableMoves.Add(new int[] { x - i, y });
+                        }
+                        else if (board.ChessBoard[x - i, y].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x - i, y });
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
+                }
+
+                //moves vertically incrementing y
+                for (int i = 1; i < 8; i++)
+                {
+                    if (y + i < 8)
                     {
-                        break;
+                        if (board.ChessBoard[x, y + i] == null)
+                        {
+                            availableMoves.Add(new int[] { x, y + i });
+                        }
+                        else if (board.ChessBoard[x, y + i].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x, y + i });
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                //moves vertically decrementing y
+                for (int i = 1; i < 8; i++)
+                {
+                    if (y - i >= 0)
+                    {
+                        if (board.ChessBoard[x, y - i] == null)
+                        {
+                            availableMoves.Add(new int[] { x, y - i });
+                        }
+                        else if (board.ChessBoard[x, y - i].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x, y - i });
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
-
-            //moves horizontally decrementing x
-            for (int i = 1; i < 8; i++)
-            {
-                if (x - i >= 0)
-                {
-                    if (board.ChessBoard[x - i, y] == null)
-                    {
-                        availableMoves.Add(new int[] { x - i, y });
-                    }
-                    else if (board.ChessBoard[x - i, y].Color.ToLower() != Color.ToLower())
-                    {
-                        availableMoves.Add(new int[] { x - i, y });
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            //moves vertically incrementing y
-            for (int i = 1; i < 8; i++)
-            {
-                if (y + i < 8)
-                {
-                    if (board.ChessBoard[x, y + i] == null)
-                    {
-                        availableMoves.Add(new int[] { x, y + i });
-                    }
-                    else if (board.ChessBoard[x, y + i].Color.ToLower() != Color.ToLower())
-                    {
-                        availableMoves.Add(new int[] { x, y + i });
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            //moves vertically decrementing y
-            for (int i = 1; i < 8; i++)
-            {
-                if (y - i > 0)
-                {
-                    if (board.ChessBoard[x, y - i] == null)
-                    {
-                        availableMoves.Add(new int[] { x, y - i });
-                    }
-                    else if (board.ChessBoard[x, y - i].Color.ToLower() != Color.ToLower())
-                    {
-                        availableMoves.Add(new int[] { x, y - i });
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
+            
             return availableMoves;
         }
     }

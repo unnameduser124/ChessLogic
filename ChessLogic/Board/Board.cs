@@ -24,6 +24,19 @@ namespace ChessLogic.Board
                 ChessBoard[0, 7] = new Rook("Black");
                 ChessBoard[7, 7] = new Rook("Black");
             }
+            else if(piece.ToLower() == "pawn")
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    ChessBoard[i, 1] = new Pawn("white");
+                    ChessBoard[i, 6] = new Pawn("black");
+                }
+
+                ChessBoard[0, 2] = new Rook("Black");
+                ChessBoard[7, 2] = new Rook("Black");
+                ChessBoard[0, 5] = new Rook("White");
+                ChessBoard[7, 5] = new Rook("White");
+            }
         }
         public Piece[,] ChessBoard { get; set; }
 

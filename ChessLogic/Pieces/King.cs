@@ -18,8 +18,21 @@ namespace ChessLogic.Pieces
         public string Name { get; set; }
         public string Color { get; set; }
 
-        public List<int[]> availableMoves(int x, int y, Board.Board board)
+        public List<int[]> availableMoves(Board.Board board)
         {
+            int x = -1, y = -1;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (board.ChessBoard[i, j] == this)
+                    {
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+
             List<int[]> availableMoves = new List<int[]>();
 
             return availableMoves;
