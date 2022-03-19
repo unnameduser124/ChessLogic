@@ -37,6 +37,25 @@ namespace ChessLogic.Board
                 ChessBoard[0, 5] = new Rook("White");
                 ChessBoard[7, 5] = new Rook("White");
             }
+            else if(piece.ToLower() == "bishop")
+            {
+                ChessBoard[2, 0] = new Bishop("White");
+                ChessBoard[5, 0] = new Bishop("White");
+                ChessBoard[5, 3] = new Bishop("Black");
+                ChessBoard[3, 3] = new Bishop("Black");
+
+                ChessBoard[1, 1] = new Pawn("White");
+            }
+            else if(piece.ToLower() == "queen")
+            {
+                ChessBoard[2, 0] = new Bishop("White");
+                ChessBoard[5, 0] = new Bishop("White");
+                ChessBoard[5, 3] = new Bishop("Black");
+                ChessBoard[3, 3] = new Bishop("Black");
+                ChessBoard[3, 1] = new Queen("White");
+
+                ChessBoard[1, 1] = new Pawn("White");
+            }
         }
         public Piece[,] ChessBoard { get; set; }
 
@@ -56,13 +75,13 @@ namespace ChessLogic.Board
 
             ChessBoard[1, 0] = new Knight("White");
             ChessBoard[6, 0] = new Knight("White");
-            ChessBoard[1, 7] = new Knight("White");
-            ChessBoard[6, 7] = new Knight("White");
+            ChessBoard[1, 7] = new Knight("Black");
+            ChessBoard[6, 7] = new Knight("Black");
 
             ChessBoard[2, 0] = new Bishop("White");
             ChessBoard[5, 0] = new Bishop("White");
-            ChessBoard[2, 7] = new Bishop("White");
-            ChessBoard[5, 7] = new Bishop("White");
+            ChessBoard[2, 7] = new Bishop("Black");
+            ChessBoard[5, 7] = new Bishop("Black");
 
             ChessBoard[3, 0] = new Queen("White");
             ChessBoard[4, 0] = new King("White");

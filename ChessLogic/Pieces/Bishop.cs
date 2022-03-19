@@ -34,6 +34,90 @@ namespace ChessLogic.Pieces
             }
 
             List<int[]> availableMoves = new List<int[]>();
+            if (x != -1)
+            {
+                //moves incrementing x and y
+                for (int i=1; i<8; i++)
+                {
+                    if(x+i < 8 && y+i < 8)
+                    {
+                        if (board.ChessBoard[x+i, y + i] == null)
+                        {
+                            availableMoves.Add(new int[] { x + i, y + i });
+                        }
+                        else if(board.ChessBoard[x + i, y + i].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x + i, y + i });
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                //moves decrementing x and y
+                for (int i=1; i<8; i++)
+                {
+                    if(x-i >= 0 && y-i >= 0)
+                    {
+                        if(board.ChessBoard[x - i, y - i] == null)
+                        {
+                            availableMoves.Add(new int[] { x - i, y - i });
+                        }
+                        else if(board.ChessBoard[x - i, y - i].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x - i, y - i });
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                //moves decrementing x and incrementing y
+                for (int i=1; i<8; i++)
+                {
+                    if(x-i >= 0 && y+i < 8)
+                    {
+                        if(board.ChessBoard[x - i, y + i] == null)
+                        {
+                            availableMoves.Add(new int[] { x - i, y + i });
+                        }
+                        else if(board.ChessBoard[x - i, y + i].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x - i, y + i });
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                //moves incrementing x and decrementing y
+                for (int i=1; i<8; i++)
+                {
+                    if(x + i < 8 && y - i >= 0)
+                    {
+                        if(board.ChessBoard[x + i, y - i] == null)
+                        {
+                            availableMoves.Add(new int[] { x + i, y - i });
+                        }
+                        else if(board.ChessBoard[x + i, y - i].Color.ToLower() != Color.ToLower())
+                        {
+                            availableMoves.Add(new int[] { x + i, y - i });
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            
 
             return availableMoves;
         }

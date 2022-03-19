@@ -48,6 +48,7 @@ namespace ChessLogic.Pieces
                         else if (board.ChessBoard[x + i, y].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x + i, y });
+                            break;
                         }
                         else
                         {
@@ -68,6 +69,7 @@ namespace ChessLogic.Pieces
                         else if (board.ChessBoard[x - i, y].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x - i, y });
+                            break;
                         }
                         else
                         {
@@ -88,6 +90,7 @@ namespace ChessLogic.Pieces
                         else if (board.ChessBoard[x, y + i].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x, y + i });
+                            break;
                         }
                         else
                         {
@@ -108,6 +111,7 @@ namespace ChessLogic.Pieces
                         else if (board.ChessBoard[x, y - i].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x, y - i });
+                            break;
                         }
                         else
                         {
