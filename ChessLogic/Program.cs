@@ -17,7 +17,7 @@ namespace ChessLogic
             {
                 return (char)(cord + 97);
             }
-            var board = new Board.Board("Queen");
+            var board = new Board.Board("King");
 
             for(int i=0; i<8; i++)
             {
@@ -31,9 +31,9 @@ namespace ChessLogic
                 }
             }
             Console.WriteLine("Available moves: ");
-            foreach (var move in board.ChessBoard[3,1].availableMoves(board))
+            foreach (var move in board.ChessBoard[0,0].availableMoves(board))
             {
-                Console.WriteLine($"{board.ChessBoard[3,1].Color} {board.ChessBoard[3,1].Name} {convertCord(3)}{2} -> {convertCord(move[0])}{move[1]+1}");
+                Console.WriteLine($"{board.ChessBoard[0,0].Color} {board.ChessBoard[0,0].Name} {convertCord(0)}{1} -> {convertCord(move[0])}{move[1]+1}");
             }
 
             Console.ReadLine();

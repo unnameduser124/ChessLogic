@@ -56,6 +56,23 @@ namespace ChessLogic.Board
 
                 ChessBoard[1, 1] = new Pawn("White");
             }
+            else if(piece.ToLower() == "knight")
+            {
+                ChessBoard[3, 3] = new Knight("White");
+                ChessBoard[0, 3] = new Knight("White");
+                ChessBoard[7, 7] = new Knight("Black");
+                ChessBoard[5, 6] = new Pawn("White");
+                ChessBoard[6, 5] = new Pawn("Black");
+            }
+            else if(piece.ToLower() == "king")
+            {
+                ChessBoard[3, 3] = new King("White");
+                ChessBoard[0, 0] = new King("White");
+                ChessBoard[0, 3] = new King("White");
+
+                ChessBoard[1, 4] = new Pawn("White");
+                ChessBoard[1, 3] = new Pawn("Black");
+            }
         }
         public Piece[,] ChessBoard { get; set; }
 
