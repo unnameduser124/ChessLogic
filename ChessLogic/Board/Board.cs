@@ -105,5 +105,27 @@ namespace ChessLogic.Board
             ChessBoard[3, 7] = new Queen("White");
             ChessBoard[4, 7] = new King("White");
         }
+
+        public bool movePiece(int fromX, int fromY, int toX, int toY)
+        {
+            Console.WriteLine($"from = {fromX} {fromY} to = {toX} {toY}");
+
+            if (fromX>=0 && fromX<8 && fromY>=0 && fromY<8 && toX>=0 && toX<8 && toY>=0 && toY < 8)
+            {
+                var piece = ChessBoard[fromX, fromY];
+                var destination = ChessBoard[toX, toY];
+                if (piece != null)
+                {
+                    if(destination == null || destination.Color.ToLower() != piece.Color.ToLower())
+                    {
+                        ChessBoard[toX, toY] = null;
+                        (ChessBoard[fromX, fromY], ChessBoard[toX, toY]) = (ChessBoard[toX, toY], ChessBoard[fromX, fromY]);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }
