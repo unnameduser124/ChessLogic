@@ -14,5 +14,7 @@ namespace ChessLogic.Pieces
         string Color { get; set; }
 
         List<int []> availableMoves(Board.Board board);
+
+        Piece copy();
     }
 }

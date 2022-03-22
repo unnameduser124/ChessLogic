@@ -121,5 +121,10 @@ namespace ChessLogic.Pieces
 
             return availableMoves;
         }
+
+        public Piece copy()
+        {
+            return new Bishop(Color);
+        }
     }
 }
