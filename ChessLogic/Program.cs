@@ -19,70 +19,43 @@ namespace ChessLogic
             }
             var board = new Board.Board("test");
 
-            Console.WriteLine("Postion:");
-            for(int i=0; i<8; i++)
+            void position()
             {
-                for (int j=0; j<8; j++)
+                Console.WriteLine("Postion:");
+                for (int i = 0; i < 8; i++)
                 {
-                    if (board.ChessBoard[j, i] != null)
+                    for (int j = 0; j < 8; j++)
                     {
-                        var piece = board.ChessBoard[j, i];
-                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1} {piece.Color}");
+                        if (board.ChessBoard[j, i] != null)
+                        {
+                            var piece = board.ChessBoard[j, i];
+                            Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1} {piece.Color}");
+                        }
                     }
                 }
             }
 
-            Console.WriteLine("Check: " + board.check());
-
-            Console.WriteLine("Move success: " +  board.movePiece(1, 0, 1, 1));
-
-            Console.WriteLine("Postion:");
-            for (int i = 0; i < 8; i++)
+            void move(int fromX, int fromY, int toX, int toY)
             {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (board.ChessBoard[j, i] != null)
-                    {
-                        var piece = board.ChessBoard[j, i];
-                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1} {piece.Color}");
-                    }
-                }
+                position();
+
+                Console.WriteLine("Check: " + board.check());
+
+                Console.WriteLine("Move success: " + board.movePiece(fromX, fromY, toX, toY));
             }
 
-            Console.WriteLine("Check: " + board.check());
-            Console.WriteLine("Move success: " + board.movePiece(1, 0, 2, 0));
-
-            Console.WriteLine("Postion:");
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (board.ChessBoard[j, i] != null)
-                    {
-                        var piece = board.ChessBoard[j, i];
-                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1} {piece.Color}");
-                    }
-                }
-            }
-
-
-            Console.WriteLine("Check: " + board.check()); 
-            Console.WriteLine("Move success: " + board.movePiece(2, 0, 6, 0));
-
-            Console.WriteLine("Postion:");
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (board.ChessBoard[j, i] != null)
-                    {
-                        var piece = board.ChessBoard[j, i];
-                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1} {piece.Color}");
-                    }
-                }
-            }
-            Console.WriteLine("Check: " + board.check());
-
+            move(0, 6, 0, 4);
+            move(1, 4, 0, 5);
+            position();
+            board.undoMove();
+            position();
+            move(2, 6, 3, 5);
+            move(2, 6, 2, 5);
+            move(7, 1, 7, 3);
+            move(6, 3, 7, 2);
+            position();
+            board.undoMove();
+            position();
 
             Console.ReadLine();
         }

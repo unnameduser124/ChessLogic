@@ -19,6 +19,8 @@ namespace ChessLogic.Pieces
         public string Name { get; set; }
         public string Color { get; set; }
 
+        public bool EnPassant { get; set; }
+
         public List<int[]> availableMoves(Board.Board board)
         {
             int x = -1, y = -1;
@@ -53,6 +55,7 @@ namespace ChessLogic.Pieces
                         {
                             availableMoves.Add(new int[] { x, y + 2 });
                         }
+
                     }
                     if (y + 1 < 8 && x + 1 < 8)
                     {
@@ -71,6 +74,33 @@ namespace ChessLogic.Pieces
                             if (board.ChessBoard[x - 1, y + 1].Color.ToLower() != Color.ToLower())
                             {
                                 availableMoves.Add(new int[] { x - 1, y + 1 });
+                            }
+                        }
+                    }
+
+                    if (x - 1 >= 0 && y + 1 < 8)
+                    {
+                        if (board.ChessBoard[x-1, y]!=null && board.ChessBoard[x-1, y + 1] == null)
+                        {
+                            if(board.ChessBoard[x - 1, y].Color.ToLower() == "black" && board.ChessBoard[x - 1, y].Name.ToLower()=="pawn")
+                            {
+                                if ((board.ChessBoard[x-1, y] as Pawn).EnPassant)
+                                {
+                                    availableMoves.Add(new int[] { x - 1, y + 1 });
+                                }
+                            }
+                        }
+                    }
+                    if (x + 1 < 8 && y + 1 < 8)
+                    {
+                        if(board.ChessBoard[x+1, y]!=null && board.ChessBoard[x+1, y + 1] == null)
+                        {
+                            if(board.ChessBoard[x + 1, y].Color.ToLower() == "black" && board.ChessBoard[x + 1, y].Name.ToLower()=="pawn")
+                            {
+                                if ((board.ChessBoard[x + 1, y] as Pawn).EnPassant)
+                                {
+                                    availableMoves.Add(new int[] { x + 1, y + 1 });
+                                }
                             }
                         }
                     }
@@ -111,6 +141,33 @@ namespace ChessLogic.Pieces
                             }
                         }
                     }
+
+                    if (x - 1 >= 0 && y - 1 < 8)
+                    {
+                        if (board.ChessBoard[x - 1, y] != null && board.ChessBoard[x - 1, y + 1] == null)
+                        {
+                            if (board.ChessBoard[x - 1, y].Color.ToLower() == "white" && board.ChessBoard[x - 1, y].Name.ToLower() == "pawn")
+                            {
+                                if ((board.ChessBoard[x - 1, y] as Pawn).EnPassant)
+                                {
+                                    availableMoves.Add(new int[] { x - 1, y + 1 });
+                                }
+                            }
+                        }
+                    }
+                    if (x + 1 < 8 && y - 1 < 8)
+                    {
+                        if (board.ChessBoard[x + 1, y] != null && board.ChessBoard[x + 1, y - 1] == null)
+                        {
+                            if (board.ChessBoard[x + 1, y].Color.ToLower() == "white" && board.ChessBoard[x + 1, y].Name.ToLower() == "pawn")
+                            {
+                                if ((board.ChessBoard[x + 1, y] as Pawn).EnPassant)
+                                {
+                                    availableMoves.Add(new int[] { x + 1, y - 1 });
+                                }
+                            }
+                        }
+                    }
                 }
             }
             return availableMoves;
@@ -118,7 +175,9 @@ namespace ChessLogic.Pieces
 
         public Piece copy()
         {
-            return new Pawn(Color);
+            var newPawn = new Pawn(Color);
+            newPawn.EnPassant = EnPassant;
+            return newPawn;
         }
     }
 }

@@ -20,10 +20,12 @@ namespace ChessLogic.Board
             MoveHistory = new List<Move>();
             if (position.ToLower() == "test")
             {
-                ChessBoard[0, 0] = new King("White");
-                ChessBoard[7, 0] = new King("Black");
-                ChessBoard[1, 0] = new Rook("White");
-                ChessBoard[6, 0] = new Rook("Black");
+                ChessBoard[0, 6] = new Pawn("Black");
+                ChessBoard[1, 4] = new Pawn("White");
+                ChessBoard[2, 6] = new Pawn("Black");
+                ChessBoard[3, 6] = new Pawn("White");
+                ChessBoard[7, 1] = new Pawn("White");
+                ChessBoard[6, 3] = new Pawn("Black");
             }
         }
         public Piece[,] ChessBoard { get; set; }
@@ -64,6 +66,52 @@ namespace ChessLogic.Board
         {
             Console.WriteLine($"from = {(char)(fromX+97)}{fromY+1} to = {(char)(toX + 97)}{toY+1}");
 
+            void EnPassantCheck()
+            {
+                if (ChessBoard[fromX, fromY].Name.ToLower() == "pawn")
+                {
+                    if (fromY + 2 == toY || fromY - 2 == toY)
+                    {
+                        (ChessBoard[fromX, fromY] as Pawn).EnPassant = true;
+                    }
+
+                    if (ChessBoard[fromX, fromY].Color.ToLower() == "white")
+                    {
+                        if (ChessBoard[toX, toY - 1] != null)
+                        {
+                            if (ChessBoard[toX, toY - 1].Name.ToLower() == "pawn")
+                            {
+                                if ((ChessBoard[toX, toY - 1] as Pawn).EnPassant)
+                                {
+                                    MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY - 1].copy();
+                                    ChessBoard[toX, toY - 1] = null;
+                                }
+                            }
+                        }
+                            
+
+                    }
+                    else if (ChessBoard[fromX, fromY].Color.ToLower() == "black")
+                    {
+                        if(ChessBoard[toX, toY + 1] != null)
+                        {
+                            if (ChessBoard[toX, toY + 1].Name.ToLower() == "pawn")
+                            {
+                                if ((ChessBoard[toX, toY + 1] as Pawn).EnPassant)
+                                {
+                                    MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY + 1].copy();
+                                    ChessBoard[toX, toY + 1] = null;
+                                }
+                            }
+                        }
+                        
+
+                    }
+
+
+                }
+            }
+
             if (fromX>=0 && fromX<8 && fromY>=0 && fromY<8 && toX>=0 && toX<8 && toY>=0 && toY < 8)
             {
                 var piece = ChessBoard[fromX, fromY];
@@ -72,7 +120,8 @@ namespace ChessLogic.Board
                 {
                     foreach(var move in piece.availableMoves(this))
                     {
-                        if(new int[] { toX, toY }.SequenceEqual(move))
+
+                        if (new int[] { toX, toY }.SequenceEqual(move))
                         {
                             if (destination == null || destination.Color.ToLower() != piece.Color.ToLower())
                             {
@@ -84,11 +133,18 @@ namespace ChessLogic.Board
                                 else
                                 {
                                     MoveHistory.Add(new Move(fromX, fromY, toX, toY));
+                                    EnPassantCheck();
                                 }
+                                
                                 (ChessBoard[fromX, fromY], ChessBoard[toX, toY]) = (ChessBoard[toX, toY], ChessBoard[fromX, fromY]);
                                 if (check() == ChessBoard[toX, toY].Color.ToLower())
                                 {
                                     undoMove();
+                                    if (ChessBoard[fromX, fromY].Name.ToLower() == "pawn")
+                                    {
+                                        (ChessBoard[fromX, fromY] as Pawn).EnPassant = false;
+
+                                    }
                                     return false;
                                 }
                                 return true;
@@ -137,6 +193,11 @@ namespace ChessLogic.Board
                 }
             }
 
+            if(blackKingPosition == null || whiteKingPosition == null)
+            {
+                return "false";
+            }
+
 
             for (int i = 0; i < 8; i++)
             {
@@ -146,11 +207,11 @@ namespace ChessLogic.Board
                     {
                         foreach(var move in ChessBoard[i, j].availableMoves(this))
                         {
-                            if((move[0]==whiteKingPosition[0] && move[1]==whiteKingPosition[1]))
+                            if(move.SequenceEqual(whiteKingPosition))
                             {
                                 return "white";
                             }
-                            else if(move[0] == blackKingPosition[0] && move[1] == blackKingPosition[1]){
+                            else if(move.SequenceEqual(blackKingPosition)){
                                 return "black";
                             }
                         }
@@ -164,7 +225,33 @@ namespace ChessLogic.Board
         public void undoMove()
         {
             (ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY], ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY]) = (ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY], ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY]);
-            ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+
+            if (MoveHistory.Last().pieceCaptured != null)
+            {
+                if (MoveHistory.Last().pieceCaptured.Name.ToLower() == "pawn")
+                {
+                    if ((MoveHistory.Last().pieceCaptured as Pawn).EnPassant)
+                    {
+                        if (MoveHistory.Last().pieceCaptured.Color.ToLower() == "white")
+                        {
+                            ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY + 1] = MoveHistory.Last().pieceCaptured;
+                        }
+                        else
+                        {
+                            ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY - 1] = MoveHistory.Last().pieceCaptured;
+                        }
+                    }
+                    else
+                    {
+                        ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+                    }
+                }
+            }
+            else
+            {
+                ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+            }
+
         }
     }
 }
