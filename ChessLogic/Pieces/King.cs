@@ -12,11 +12,15 @@ namespace ChessLogic.Pieces
         {
             NotationName = "K";
             Name = "King";
+            CastlingLong = true;
+            CastlingShort = true;
             this.Color = Color;
         }
         public string NotationName { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
+        public bool CastlingLong { get; set; }
+        public bool CastlingShort { get; set; }
 
         public List<int[]> availableMoves(Board.Board board)
         {
@@ -128,7 +132,56 @@ namespace ChessLogic.Pieces
                 }
             }
 
+            if (x == 4)
+            {
+                if (CastlingLong)
+                {
+                    if (board.ChessBoard[x - 1, y] == null && board.ChessBoard[x - 2, y] == null && board.ChessBoard[x - 3, y] == null)
+                    {
+                        if (!(availableMovesContains(new int[] { x - 1, y }, board, x, y) || availableMovesContains(new int[] { x - 2, y }, board, x, y)))
+                        {
+                            availableMoves.Add(new int[] { 2, y });
+                        }
+                    }
+                }
+                if (CastlingShort)
+                {
+                    if (board.ChessBoard[x + 1, y] == null && board.ChessBoard[x + 2, y] == null)
+                    {
+                        if (!(availableMovesContains(new int[] { x + 1, y }, board, x, y) || availableMovesContains(new int[] { x + 2, y }, board, x, y)))
+                        {
+                            availableMoves.Add(new int[] { 6, y });
+                        }
+                    }
+                }
+            }
+            
             return availableMoves;
+        }
+
+        public bool availableMovesContains(int [] position, Board.Board board, int x, int y)
+        {
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    if(board.ChessBoard[i, j] != null)
+                    {
+                        if(board.ChessBoard[i, j].Name!=Name && board.ChessBoard[i, j].Color.ToLower() != Color.ToLower())
+                        {
+                            foreach(var move in board.ChessBoard[i, j].availableMoves(board))
+                            {
+                                if (move.SequenceEqual(position))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         public Piece copy()

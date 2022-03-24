@@ -16,6 +16,8 @@ namespace ChessLogic.Board
 
         public Piece pieceCaptured { get; set; }
 
+        public bool Castling { get; set; }
+
         public Move(int fromX, int fromY, int toX, int toY, Piece pieceCaptured)
         {
             this.fromX = fromX;

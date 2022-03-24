@@ -20,12 +20,12 @@ namespace ChessLogic.Board
             MoveHistory = new List<Move>();
             if (position.ToLower() == "test")
             {
-                ChessBoard[0, 6] = new Pawn("Black");
-                ChessBoard[1, 4] = new Pawn("White");
-                ChessBoard[2, 6] = new Pawn("Black");
-                ChessBoard[3, 6] = new Pawn("White");
-                ChessBoard[7, 1] = new Pawn("White");
-                ChessBoard[6, 3] = new Pawn("Black");
+                ChessBoard[0, 0] = new Rook("White");
+                ChessBoard[7, 0] = new Rook("White");
+                ChessBoard[7, 7] = new Rook("Black");
+                ChessBoard[0, 7] = new Rook("Black");
+                ChessBoard[4, 0] = new King("White");
+                ChessBoard[4, 7] = new King("Black");
             }
         }
         public Piece[,] ChessBoard { get; set; }
@@ -112,6 +112,75 @@ namespace ChessLogic.Board
                 }
             }
 
+            void castlingRights()
+            {
+                if (ChessBoard[toX, toY].Name == "King")
+                {
+                    (ChessBoard[toX, toY] as King).CastlingLong = false;
+                    (ChessBoard[toX, toY] as King).CastlingShort = false;
+                }
+                else if (ChessBoard[toX, toY].Name == "Rook")
+                {
+                    if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 0, 0 }))
+                    {
+                        if (ChessBoard[4, 0] != null)
+                        {
+                            if (ChessBoard[4, 0].Name == "King")
+                            {
+                                (ChessBoard[4, 0] as King).CastlingLong = false;
+                            }
+                        }
+                    }
+                    else if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 7, 0 }))
+                    {
+                        if (ChessBoard[4, 0] != null)
+                        {
+                            if (ChessBoard[4, 0].Name == "King")
+                            {
+                                (ChessBoard[4, 0] as King).CastlingShort = false;
+                            }
+                        }
+                    }
+                    else if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 0, 7 }))
+                    {
+                        if (ChessBoard[4, 7] != null)
+                        {
+                            if (ChessBoard[4, 7].Name == "King")
+                            {
+                                (ChessBoard[4, 7] as King).CastlingLong = false;
+                            }
+                        }
+                    }
+                    else if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 7, 7 }))
+                    {
+                        if (ChessBoard[4, 7] != null)
+                        {
+                            if (ChessBoard[4, 7].Name == "King")
+                            {
+                                (ChessBoard[4, 7] as King).CastlingShort = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            void castleCheck()
+            {
+                if (ChessBoard[fromX, fromY] != null)
+                {
+                    if (ChessBoard[fromX, fromY].Name == "King" && fromX - 2 == toX)
+                    {
+                        (ChessBoard[fromX-4, fromY], ChessBoard[toX+1, toY]) = (ChessBoard[toX+1, toY], ChessBoard[fromX-4, fromY]);
+                        MoveHistory.Last().Castling = true;
+                    }
+                    else if(ChessBoard[fromX, fromY].Name == "King" && fromX + 2 == toX)
+                    {
+                        (ChessBoard[fromX + 3, fromY], ChessBoard[toX - 1, toY]) = (ChessBoard[toX - 1, toY], ChessBoard[fromX + 3, fromY]);
+                        MoveHistory.Last().Castling = true;
+                    }
+                }
+            }
+
             if (fromX>=0 && fromX<8 && fromY>=0 && fromY<8 && toX>=0 && toX<8 && toY>=0 && toY < 8)
             {
                 var piece = ChessBoard[fromX, fromY];
@@ -123,6 +192,7 @@ namespace ChessLogic.Board
 
                         if (new int[] { toX, toY }.SequenceEqual(move))
                         {
+
                             if (destination == null || destination.Color.ToLower() != piece.Color.ToLower())
                             {
                                 ChessBoard[toX, toY] = null;
@@ -133,6 +203,7 @@ namespace ChessLogic.Board
                                 else
                                 {
                                     MoveHistory.Add(new Move(fromX, fromY, toX, toY));
+                                    castleCheck();
                                     EnPassantCheck();
                                 }
                                 
@@ -147,6 +218,11 @@ namespace ChessLogic.Board
                                     }
                                     return false;
                                 }
+                                else
+                                {
+                                    castlingRights();
+                                }
+
                                 return true;
                             }
                             break;
@@ -224,34 +300,73 @@ namespace ChessLogic.Board
 
         public void undoMove()
         {
-            (ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY], ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY]) = (ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY], ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY]);
-
-            if (MoveHistory.Last().pieceCaptured != null)
+            if (MoveHistory.Any())
             {
-                if (MoveHistory.Last().pieceCaptured.Name.ToLower() == "pawn")
+                (ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY], ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY]) = (ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY], ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY]);
+
+                if (MoveHistory.Last().pieceCaptured != null)
                 {
-                    if ((MoveHistory.Last().pieceCaptured as Pawn).EnPassant)
+                    if (MoveHistory.Last().pieceCaptured.Name.ToLower() == "pawn")
                     {
-                        if (MoveHistory.Last().pieceCaptured.Color.ToLower() == "white")
+                        if ((MoveHistory.Last().pieceCaptured as Pawn).EnPassant)
                         {
-                            ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY + 1] = MoveHistory.Last().pieceCaptured;
+                            if (MoveHistory.Last().pieceCaptured.Color.ToLower() == "white")
+                            {
+                                ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY + 1] = MoveHistory.Last().pieceCaptured;
+                            }
+                            else
+                            {
+                                ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY - 1] = MoveHistory.Last().pieceCaptured;
+                            }
                         }
                         else
                         {
-                            ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY - 1] = MoveHistory.Last().pieceCaptured;
+                            ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
                         }
+                    }
+                }
+                else
+                {
+                    ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+                }
+
+                if (MoveHistory.Last().Castling)
+                {
+                    var fromX = MoveHistory.Last().fromX;
+                    var fromY = MoveHistory.Last().fromY;
+                    var toX = MoveHistory.Last().toX;
+                    var toY = MoveHistory.Last().toY;
+                    if (fromX - 2 == toX)
+                    {
+                        (ChessBoard[3, fromY], ChessBoard[0, toY]) = (ChessBoard[0, toY], ChessBoard[3, fromY]);
                     }
                     else
                     {
-                        ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+                        (ChessBoard[5, fromY], ChessBoard[7, toY]) = (ChessBoard[7, toY], ChessBoard[5, fromY]);
                     }
                 }
             }
-            else
+            
+
+        }
+
+        public int[] findKing(string color)
+        {
+            for (int i = 0; i < 8; i++)
             {
-                ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+                for (int j = 0; j < 8; j++)
+                {
+                    if (ChessBoard[i, j] != null)
+                    {
+                        if(ChessBoard[i,j].Name.ToLower() == "king" && ChessBoard[i, j].Color.ToLower()==color)
+                        {
+                            return new int[] { i, j };
+                        }
+                    }
+                }
             }
 
+            return new int[] { -1, -1 };
         }
     }
 }

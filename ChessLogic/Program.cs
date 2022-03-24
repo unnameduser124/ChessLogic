@@ -43,19 +43,12 @@ namespace ChessLogic
 
                 Console.WriteLine("Move success: " + board.movePiece(fromX, fromY, toX, toY));
             }
-
-            move(0, 6, 0, 4);
-            move(1, 4, 0, 5);
+            move(4, 0, 6, 0);
+            move(4, 7, 2, 7);
             position();
             board.undoMove();
             position();
-            move(2, 6, 3, 5);
-            move(2, 6, 2, 5);
-            move(7, 1, 7, 3);
-            move(6, 3, 7, 2);
-            position();
-            board.undoMove();
-            position();
+            
 
             Console.ReadLine();
         }
