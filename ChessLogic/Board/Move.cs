@@ -16,6 +16,8 @@ namespace ChessLogic.Board
 
         public Piece pieceCaptured { get; set; }
 
+        public Piece piecePromoted { get; set; }
+
         public bool Castling { get; set; }
 
         public Move(int fromX, int fromY, int toX, int toY, Piece pieceCaptured)
@@ -25,6 +27,7 @@ namespace ChessLogic.Board
             this.toX = toX;
             this.toY = toY;
             this.pieceCaptured = pieceCaptured;
+            this.piecePromoted = null;
         }
 
         public Move(int fromX, int fromY, int toX, int toY)
@@ -34,6 +37,7 @@ namespace ChessLogic.Board
             this.toX = toX;
             this.toY = toY;
             this.pieceCaptured = null;
+            this.piecePromoted = null;
         }
     }
 }

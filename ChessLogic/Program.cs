@@ -35,16 +35,17 @@ namespace ChessLogic
                 }
             }
 
-            void move(int fromX, int fromY, int toX, int toY)
+            void move(int fromX, int fromY, int toX, int toY, string promotion = "")
             {
                 position();
 
                 Console.WriteLine("Check: " + board.check());
 
-                Console.WriteLine("Move success: " + board.movePiece(fromX, fromY, toX, toY));
+                Console.WriteLine("Move success: " + board.movePiece(fromX, fromY, toX, toY, promotion));
             }
-            move(4, 0, 6, 0);
-            move(4, 7, 2, 7);
+            move(0, 6, 0, 7, "queen");
+            move(0, 6, 1, 7, "bishop");
+            move(0, 7, 1, 7);
             position();
             board.undoMove();
             position();

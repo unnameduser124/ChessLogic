@@ -20,12 +20,9 @@ namespace ChessLogic.Board
             MoveHistory = new List<Move>();
             if (position.ToLower() == "test")
             {
-                ChessBoard[0, 0] = new Rook("White");
-                ChessBoard[7, 0] = new Rook("White");
-                ChessBoard[7, 7] = new Rook("Black");
+                ChessBoard[0, 6] = new Pawn("White");
                 ChessBoard[0, 7] = new Rook("Black");
-                ChessBoard[4, 0] = new King("White");
-                ChessBoard[4, 7] = new King("Black");
+                ChessBoard[1, 7] = new Rook("Black");
             }
         }
         public Piece[,] ChessBoard { get; set; }
@@ -62,7 +59,7 @@ namespace ChessLogic.Board
             ChessBoard[4, 7] = new King("White");
         }
 
-        public bool movePiece(int fromX, int fromY, int toX, int toY)
+        public bool movePiece(int fromX, int fromY, int toX, int toY, string promotion = "")
         {
             Console.WriteLine($"from = {(char)(fromX+97)}{fromY+1} to = {(char)(toX + 97)}{toY+1}");
 
@@ -181,6 +178,33 @@ namespace ChessLogic.Board
                 }
             }
 
+            void pawnPromotion()
+            {
+                var movedPiece = ChessBoard[fromX, fromY];
+                if (movedPiece.Name.ToLower() == "pawn" && (toY==7 || toY==0))
+                {
+                    if(promotion == "queen")
+                    {
+                        ChessBoard[fromX, fromY] = new Queen(movedPiece.Color);
+                    }
+                    else if(promotion == "knight"){
+                        ChessBoard[fromX, fromY] = new Knight(movedPiece.Color);
+                    }
+                    else if(promotion == "rook"){
+                        ChessBoard[fromX, fromY] = new Rook(movedPiece.Color);
+                    }
+                    else if(promotion == "bishop"){
+                        ChessBoard[fromX, fromY] = new Bishop(movedPiece.Color);
+                    }
+                    else
+                    {
+                        MoveHistory.Last().piecePromoted = null;
+                        return;
+                    }
+                    MoveHistory.Last().piecePromoted = ChessBoard[fromX, fromY];
+                }
+            }
+
             if (fromX>=0 && fromX<8 && fromY>=0 && fromY<8 && toX>=0 && toX<8 && toY>=0 && toY < 8)
             {
                 var piece = ChessBoard[fromX, fromY];
@@ -195,17 +219,20 @@ namespace ChessLogic.Board
 
                             if (destination == null || destination.Color.ToLower() != piece.Color.ToLower())
                             {
-                                ChessBoard[toX, toY] = null;
                                 if (destination != null)
                                 {
                                     MoveHistory.Add(new Move(fromX, fromY, toX, toY, destination.copy()));
+                                    pawnPromotion();
                                 }
                                 else
                                 {
                                     MoveHistory.Add(new Move(fromX, fromY, toX, toY));
                                     castleCheck();
                                     EnPassantCheck();
+                                    pawnPromotion();
                                 }
+                                
+                                ChessBoard[toX, toY] = null;
                                 
                                 (ChessBoard[fromX, fromY], ChessBoard[toX, toY]) = (ChessBoard[toX, toY], ChessBoard[fromX, fromY]);
                                 if (check() == ChessBoard[toX, toY].Color.ToLower())
@@ -216,6 +243,11 @@ namespace ChessLogic.Board
                                         (ChessBoard[fromX, fromY] as Pawn).EnPassant = false;
 
                                     }
+                                    return false;
+                                }
+                                else if((toY==7 || toY==0) && ChessBoard[toX, toY].Name.ToLower() == "pawn")
+                                {
+                                    undoMove();
                                     return false;
                                 }
                                 else
@@ -324,6 +356,10 @@ namespace ChessLogic.Board
                             ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
                         }
                     }
+                    else
+                    {
+                        ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
+                    }
                 }
                 else
                 {
@@ -345,28 +381,22 @@ namespace ChessLogic.Board
                         (ChessBoard[5, fromY], ChessBoard[7, toY]) = (ChessBoard[7, toY], ChessBoard[5, fromY]);
                     }
                 }
+
+                if (MoveHistory.Last().piecePromoted != null)
+                {
+                    var fromX = MoveHistory.Last().fromX;
+                    var fromY = MoveHistory.Last().fromY; 
+                    var toX = MoveHistory.Last().toX;
+                    var toY = MoveHistory.Last().toY;
+                    ChessBoard[fromX, fromY] = new Pawn(ChessBoard[fromX, fromY].Color);
+                    ChessBoard[toX, toY] = MoveHistory.Last().pieceCaptured;
+                }
+
+                MoveHistory.Remove(MoveHistory.Last());
             }
             
 
         }
 
-        public int[] findKing(string color)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (ChessBoard[i, j] != null)
-                    {
-                        if(ChessBoard[i,j].Name.ToLower() == "king" && ChessBoard[i, j].Color.ToLower()==color)
-                        {
-                            return new int[] { i, j };
-                        }
-                    }
-                }
-            }
-
-            return new int[] { -1, -1 };
-        }
     }
 }
