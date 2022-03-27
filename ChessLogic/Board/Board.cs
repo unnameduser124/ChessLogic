@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChessLogic.Board
 {
@@ -20,9 +18,14 @@ namespace ChessLogic.Board
             MoveHistory = new List<Move>();
             if (position.ToLower() == "test")
             {
-                ChessBoard[0, 6] = new Pawn("White");
-                ChessBoard[0, 7] = new Rook("Black");
-                ChessBoard[1, 7] = new Rook("Black");
+                ChessBoard[0, 6] = new Pawn("Black");
+                ChessBoard[1, 4] = new Pawn("White");
+                ChessBoard[0, 3] = new Pawn("Black");
+                ChessBoard[1, 1] = new Pawn("White");
+            }
+            else
+            {
+                startingPosition();
             }
         }
         public Piece[,] ChessBoard { get; set; }
@@ -32,7 +35,7 @@ namespace ChessLogic.Board
         public void startingPosition()
         {
             ChessBoard = new Piece[8, 8];
-            for (int i=0; i<8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 ChessBoard[i, 1] = new Pawn("white");
                 ChessBoard[i, 6] = new Pawn("black");
@@ -61,47 +64,37 @@ namespace ChessLogic.Board
 
         public bool movePiece(int fromX, int fromY, int toX, int toY, string promotion = "")
         {
-            Console.WriteLine($"from = {(char)(fromX+97)}{fromY+1} to = {(char)(toX + 97)}{toY+1}");
+            Console.WriteLine($"from = {(char)(fromX + 97)}{fromY + 1} to = {(char)(toX + 97)}{toY + 1}");
 
             void EnPassantCheck()
             {
                 if (ChessBoard[fromX, fromY].Name.ToLower() == "pawn")
                 {
+                    //after a pawn moves two spaces up or down the board (depending on color) it's attribute "EnPassant" changes to true
                     if (fromY + 2 == toY || fromY - 2 == toY)
                     {
                         (ChessBoard[fromX, fromY] as Pawn).EnPassant = true;
                     }
 
+                    //doing en passant, meaning actually capturing a pawn
                     if (ChessBoard[fromX, fromY].Color.ToLower() == "white")
                     {
                         if (ChessBoard[toX, toY - 1] != null)
                         {
-                            if (ChessBoard[toX, toY - 1].Name.ToLower() == "pawn")
-                            {
-                                if ((ChessBoard[toX, toY - 1] as Pawn).EnPassant)
-                                {
-                                    MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY - 1].copy();
-                                    ChessBoard[toX, toY - 1] = null;
-                                }
-                            }
+                            MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY - 1].copy();
+                            ChessBoard[toX, toY - 1] = null;
                         }
-                            
+
 
                     }
                     else if (ChessBoard[fromX, fromY].Color.ToLower() == "black")
                     {
-                        if(ChessBoard[toX, toY + 1] != null)
+                        if (ChessBoard[toX, toY + 1] != null)
                         {
-                            if (ChessBoard[toX, toY + 1].Name.ToLower() == "pawn")
-                            {
-                                if ((ChessBoard[toX, toY + 1] as Pawn).EnPassant)
-                                {
-                                    MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY + 1].copy();
-                                    ChessBoard[toX, toY + 1] = null;
-                                }
-                            }
+                            MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY + 1].copy();
+                            ChessBoard[toX, toY + 1] = null;
                         }
-                        
+
 
                     }
 
@@ -111,11 +104,13 @@ namespace ChessLogic.Board
 
             void castlingRights()
             {
+                //revoking king's castling rights when it moves
                 if (ChessBoard[toX, toY].Name == "King")
                 {
                     (ChessBoard[toX, toY] as King).CastlingLong = false;
                     (ChessBoard[toX, toY] as King).CastlingShort = false;
                 }
+                //revoking king's castling rights if it's color rook moves
                 else if (ChessBoard[toX, toY].Name == "Rook")
                 {
                     if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 0, 0 }))
@@ -163,14 +158,15 @@ namespace ChessLogic.Board
 
             void castleCheck()
             {
+                //castling, meaning moving rook to proper square depending whether it is a long or short castle
                 if (ChessBoard[fromX, fromY] != null)
                 {
                     if (ChessBoard[fromX, fromY].Name == "King" && fromX - 2 == toX)
                     {
-                        (ChessBoard[fromX-4, fromY], ChessBoard[toX+1, toY]) = (ChessBoard[toX+1, toY], ChessBoard[fromX-4, fromY]);
+                        (ChessBoard[fromX - 4, fromY], ChessBoard[toX + 1, toY]) = (ChessBoard[toX + 1, toY], ChessBoard[fromX - 4, fromY]);
                         MoveHistory.Last().Castling = true;
                     }
-                    else if(ChessBoard[fromX, fromY].Name == "King" && fromX + 2 == toX)
+                    else if (ChessBoard[fromX, fromY].Name == "King" && fromX + 2 == toX)
                     {
                         (ChessBoard[fromX + 3, fromY], ChessBoard[toX - 1, toY]) = (ChessBoard[toX - 1, toY], ChessBoard[fromX + 3, fromY]);
                         MoveHistory.Last().Castling = true;
@@ -180,20 +176,24 @@ namespace ChessLogic.Board
 
             void pawnPromotion()
             {
+                //promoting a pawn if it moves to 8th or 1st rank based on desired piece provided in 'promotion' parameter
                 var movedPiece = ChessBoard[fromX, fromY];
-                if (movedPiece.Name.ToLower() == "pawn" && (toY==7 || toY==0))
+                if (movedPiece.Name.ToLower() == "pawn" && (toY == 7 || toY == 0))
                 {
-                    if(promotion == "queen")
+                    if (promotion == "queen")
                     {
                         ChessBoard[fromX, fromY] = new Queen(movedPiece.Color);
                     }
-                    else if(promotion == "knight"){
+                    else if (promotion == "knight")
+                    {
                         ChessBoard[fromX, fromY] = new Knight(movedPiece.Color);
                     }
-                    else if(promotion == "rook"){
+                    else if (promotion == "rook")
+                    {
                         ChessBoard[fromX, fromY] = new Rook(movedPiece.Color);
                     }
-                    else if(promotion == "bishop"){
+                    else if (promotion == "bishop")
+                    {
                         ChessBoard[fromX, fromY] = new Bishop(movedPiece.Color);
                     }
                     else
@@ -205,13 +205,14 @@ namespace ChessLogic.Board
                 }
             }
 
-            if (fromX>=0 && fromX<8 && fromY>=0 && fromY<8 && toX>=0 && toX<8 && toY>=0 && toY < 8)
+
+            if (fromX >= 0 && fromX < 8 && fromY >= 0 && fromY < 8 && toX >= 0 && toX < 8 && toY >= 0 && toY < 8)
             {
                 var piece = ChessBoard[fromX, fromY];
                 var destination = ChessBoard[toX, toY];
                 if (piece != null)
                 {
-                    foreach(var move in piece.availableMoves(this))
+                    foreach (var move in piece.availableMoves(this))
                     {
 
                         if (new int[] { toX, toY }.SequenceEqual(move))
@@ -221,20 +222,23 @@ namespace ChessLogic.Board
                             {
                                 if (destination != null)
                                 {
+                                    //actions performed if a piece is captured
                                     MoveHistory.Add(new Move(fromX, fromY, toX, toY, destination.copy()));
+                                    ChessBoard[toX, toY] = null;
                                     pawnPromotion();
                                 }
                                 else
                                 {
+                                    //actions performed if a piece is moved to an empty square 
                                     MoveHistory.Add(new Move(fromX, fromY, toX, toY));
                                     castleCheck();
                                     EnPassantCheck();
                                     pawnPromotion();
                                 }
-                                
-                                ChessBoard[toX, toY] = null;
-                                
+                                //actually moving a piece (swap of values in the board array)
                                 (ChessBoard[fromX, fromY], ChessBoard[toX, toY]) = (ChessBoard[toX, toY], ChessBoard[fromX, fromY]);
+
+                                //checks if move was valid
                                 if (check() == ChessBoard[toX, toY].Color.ToLower())
                                 {
                                     undoMove();
@@ -245,11 +249,13 @@ namespace ChessLogic.Board
                                     }
                                     return false;
                                 }
-                                else if((toY==7 || toY==0) && ChessBoard[toX, toY].Name.ToLower() == "pawn")
+                                //rolls back pawn move if it was moved to 8ht or 1st rank and not promoted ('promotion' parameter is empty)
+                                else if ((toY == 7 || toY == 0) && ChessBoard[toX, toY].Name.ToLower() == "pawn")
                                 {
                                     undoMove();
                                     return false;
                                 }
+                                //checks castling rights
                                 else
                                 {
                                     castlingRights();
@@ -266,14 +272,16 @@ namespace ChessLogic.Board
             return false;
         }
 
+        //function checking if either one of the kings is in check
         public string check()
         {
             int[] whiteKingPosition = null;
             int[] blackKingPosition = null;
 
-            for(int i=0; i<8; i++)
+            //searches for white and black king position
+            for (int i = 0; i < 8; i++)
             {
-                for(int j=0; j<8; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     if (ChessBoard[i, j] != null)
                     {
@@ -301,25 +309,27 @@ namespace ChessLogic.Board
                 }
             }
 
-            if(blackKingPosition == null || whiteKingPosition == null)
+            //returns false if either black or white king was not found
+            if (blackKingPosition == null || whiteKingPosition == null)
             {
                 return "false";
             }
 
-
+            //checks if any of the pieces one the boards attacks opponent's king
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
                     if (ChessBoard[i, j] != null)
                     {
-                        foreach(var move in ChessBoard[i, j].availableMoves(this))
+                        foreach (var move in ChessBoard[i, j].availableMoves(this))
                         {
-                            if(move.SequenceEqual(whiteKingPosition))
+                            if (move.SequenceEqual(whiteKingPosition))
                             {
                                 return "white";
                             }
-                            else if(move.SequenceEqual(blackKingPosition)){
+                            else if (move.SequenceEqual(blackKingPosition))
+                            {
                                 return "black";
                             }
                         }
@@ -334,10 +344,13 @@ namespace ChessLogic.Board
         {
             if (MoveHistory.Any())
             {
+                //moves back the piece that was moved in the last turn
                 (ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY], ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY]) = (ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY], ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY]);
 
+                //places back captured piece if any was captured
                 if (MoveHistory.Last().pieceCaptured != null)
                 {
+                    //placing back in case of en passant
                     if (MoveHistory.Last().pieceCaptured.Name.ToLower() == "pawn")
                     {
                         if ((MoveHistory.Last().pieceCaptured as Pawn).EnPassant)
@@ -356,6 +369,7 @@ namespace ChessLogic.Board
                             ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
                         }
                     }
+                    //placing back in any other case
                     else
                     {
                         ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
@@ -366,6 +380,7 @@ namespace ChessLogic.Board
                     ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY] = MoveHistory.Last().pieceCaptured;
                 }
 
+                //actions performed if the last move was castling - placing back the rook
                 if (MoveHistory.Last().Castling)
                 {
                     var fromX = MoveHistory.Last().fromX;
@@ -382,10 +397,11 @@ namespace ChessLogic.Board
                     }
                 }
 
+                //actions performed if the last move was a pawn promotion - turning promoted piece back into a pawn
                 if (MoveHistory.Last().piecePromoted != null)
                 {
                     var fromX = MoveHistory.Last().fromX;
-                    var fromY = MoveHistory.Last().fromY; 
+                    var fromY = MoveHistory.Last().fromY;
                     var toX = MoveHistory.Last().toX;
                     var toY = MoveHistory.Last().toY;
                     ChessBoard[fromX, fromY] = new Pawn(ChessBoard[fromX, fromY].Color);
@@ -394,7 +410,7 @@ namespace ChessLogic.Board
 
                 MoveHistory.Remove(MoveHistory.Last());
             }
-            
+
 
         }
 

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ChessLogic.Board;
 
 namespace ChessLogic
 {
@@ -43,13 +38,12 @@ namespace ChessLogic
 
                 Console.WriteLine("Move success: " + board.movePiece(fromX, fromY, toX, toY, promotion));
             }
-            move(0, 6, 0, 7, "queen");
-            move(0, 6, 1, 7, "bishop");
-            move(0, 7, 1, 7);
+            move(0, 6, 0, 4);
+            move(1, 4, 0, 5);
+            move(1, 1, 1, 3);
+            move(0, 3, 1, 2);
             position();
-            board.undoMove();
-            position();
-            
+
 
             Console.ReadLine();
         }

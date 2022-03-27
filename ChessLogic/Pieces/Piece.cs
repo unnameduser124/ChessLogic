@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChessLogic.Pieces
 {
@@ -13,7 +9,7 @@ namespace ChessLogic.Pieces
 
         string Color { get; set; }
 
-        List<int []> availableMoves(Board.Board board);
+        List<int[]> availableMoves(Board.Board board);
 
         Piece copy();
     }

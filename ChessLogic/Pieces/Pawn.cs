@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChessLogic.Pieces
 {
-    public class Pawn: Piece
+    public class Pawn : Piece
     {
         public Pawn(string Color)
         {
@@ -24,11 +21,11 @@ namespace ChessLogic.Pieces
         public List<int[]> availableMoves(Board.Board board)
         {
             int x = -1, y = -1;
-            for(int i=0; i<8; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for(int j=0; j<8; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    if(board.ChessBoard[i, j] == this)
+                    if (board.ChessBoard[i, j] == this)
                     {
                         x = i;
                         y = j;
@@ -78,32 +75,6 @@ namespace ChessLogic.Pieces
                         }
                     }
 
-                    if (x - 1 >= 0 && y + 1 < 8)
-                    {
-                        if (board.ChessBoard[x-1, y]!=null && board.ChessBoard[x-1, y + 1] == null)
-                        {
-                            if(board.ChessBoard[x - 1, y].Color.ToLower() == "black" && board.ChessBoard[x - 1, y].Name.ToLower()=="pawn")
-                            {
-                                if ((board.ChessBoard[x-1, y] as Pawn).EnPassant)
-                                {
-                                    availableMoves.Add(new int[] { x - 1, y + 1 });
-                                }
-                            }
-                        }
-                    }
-                    if (x + 1 < 8 && y + 1 < 8)
-                    {
-                        if(board.ChessBoard[x+1, y]!=null && board.ChessBoard[x+1, y + 1] == null)
-                        {
-                            if(board.ChessBoard[x + 1, y].Color.ToLower() == "black" && board.ChessBoard[x + 1, y].Name.ToLower()=="pawn")
-                            {
-                                if ((board.ChessBoard[x + 1, y] as Pawn).EnPassant)
-                                {
-                                    availableMoves.Add(new int[] { x + 1, y + 1 });
-                                }
-                            }
-                        }
-                    }
                 }
                 else
                 {
@@ -142,29 +113,29 @@ namespace ChessLogic.Pieces
                         }
                     }
 
-                    if (x - 1 >= 0 && y - 1 < 8)
+                }
+                if (x - 1 >= 0 && y - 1 < 8)
+                {
+                    if (board.ChessBoard[x - 1, y] != null && board.ChessBoard[x - 1, y + 1] == null)
                     {
-                        if (board.ChessBoard[x - 1, y] != null && board.ChessBoard[x - 1, y + 1] == null)
+                        if (board.ChessBoard[x - 1, y].Color.ToLower() != Color.ToLower() && board.ChessBoard[x - 1, y].Name.ToLower() == "pawn")
                         {
-                            if (board.ChessBoard[x - 1, y].Color.ToLower() == "white" && board.ChessBoard[x - 1, y].Name.ToLower() == "pawn")
+                            if ((board.ChessBoard[x - 1, y] as Pawn).EnPassant)
                             {
-                                if ((board.ChessBoard[x - 1, y] as Pawn).EnPassant)
-                                {
-                                    availableMoves.Add(new int[] { x - 1, y + 1 });
-                                }
+                                availableMoves.Add(new int[] { x - 1, y + 1 });
                             }
                         }
                     }
-                    if (x + 1 < 8 && y - 1 < 8)
+                }
+                if (x + 1 < 8 && y - 1 < 8)
+                {
+                    if (board.ChessBoard[x + 1, y] != null && board.ChessBoard[x + 1, y - 1] == null)
                     {
-                        if (board.ChessBoard[x + 1, y] != null && board.ChessBoard[x + 1, y - 1] == null)
+                        if (board.ChessBoard[x + 1, y].Color.ToLower() != Color.ToLower() && board.ChessBoard[x + 1, y].Name.ToLower() == "pawn")
                         {
-                            if (board.ChessBoard[x + 1, y].Color.ToLower() == "white" && board.ChessBoard[x + 1, y].Name.ToLower() == "pawn")
+                            if ((board.ChessBoard[x + 1, y] as Pawn).EnPassant)
                             {
-                                if ((board.ChessBoard[x + 1, y] as Pawn).EnPassant)
-                                {
-                                    availableMoves.Add(new int[] { x + 1, y - 1 });
-                                }
+                                availableMoves.Add(new int[] { x + 1, y - 1 });
                             }
                         }
                     }

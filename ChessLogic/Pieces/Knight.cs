@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChessLogic.Pieces
 {
@@ -40,97 +36,97 @@ namespace ChessLogic.Pieces
             {
                 //how does the knight move?
 
-                if(x + 2 < 8 && y + 1 < 8)
+                if (x + 2 < 8 && y + 1 < 8)
                 {
-                    if(board.ChessBoard[x + 2, y + 1] == null)
+                    if (board.ChessBoard[x + 2, y + 1] == null)
                     {
                         availableMoves.Add(new int[] { x + 2, y + 1 });
                     }
-                    else if(board.ChessBoard[x + 2, y + 1].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x + 2, y + 1].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x + 2, y + 1 });
                     }
                 }
-                
-                if(x + 2 < 8 && y - 1 >=0)
+
+                if (x + 2 < 8 && y - 1 >= 0)
                 {
-                    if(board.ChessBoard[x + 2, y - 1] == null)
+                    if (board.ChessBoard[x + 2, y - 1] == null)
                     {
                         availableMoves.Add(new int[] { x + 2, y - 1 });
                     }
-                    else if(board.ChessBoard[x + 2, y - 1].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x + 2, y - 1].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x + 2, y - 1 });
                     }
                 }
 
-                if(x + 1 < 8 && y + 2 < 8)
+                if (x + 1 < 8 && y + 2 < 8)
                 {
-                    if(board.ChessBoard[x + 1, y + 2] == null)
+                    if (board.ChessBoard[x + 1, y + 2] == null)
                     {
                         availableMoves.Add(new int[] { x + 1, y + 2 });
                     }
-                    else if(board.ChessBoard[x + 1, y + 2].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x + 1, y + 2].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x + 1, y + 2 });
                     }
                 }
 
-                if(x + 1 < 8 && y - 2 >=0)
+                if (x + 1 < 8 && y - 2 >= 0)
                 {
-                    if(board.ChessBoard[x + 1, y - 2] == null)
+                    if (board.ChessBoard[x + 1, y - 2] == null)
                     {
-                        availableMoves.Add(new int[] { x + 1, y - 2});
+                        availableMoves.Add(new int[] { x + 1, y - 2 });
                     }
-                    else if(board.ChessBoard[x + 1, y - 2].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x + 1, y - 2].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x + 1, y - 2 });
                     }
                 }
 
-                if(x - 1 >= 0 && y + 2 < 8)
+                if (x - 1 >= 0 && y + 2 < 8)
                 {
-                    if(board.ChessBoard[x - 1, y + 2] == null)
+                    if (board.ChessBoard[x - 1, y + 2] == null)
                     {
                         availableMoves.Add(new int[] { x - 1, y + 2 });
                     }
-                    else if(board.ChessBoard[x - 1, y + 2].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x - 1, y + 2].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x - 1, y + 2 });
                     }
                 }
 
-                if(x - 1 >= 0 && y - 2 >= 0)
+                if (x - 1 >= 0 && y - 2 >= 0)
                 {
-                    if(board.ChessBoard[x - 1, y - 2] == null)
+                    if (board.ChessBoard[x - 1, y - 2] == null)
                     {
                         availableMoves.Add(new int[] { x - 1, y - 2 });
                     }
-                    else if(board.ChessBoard[x - 1, y - 2].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x - 1, y - 2].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x - 1, y - 2 });
                     }
                 }
 
-                if(x - 2 >= 0 && y + 1 < 8)
+                if (x - 2 >= 0 && y + 1 < 8)
                 {
-                    if(board.ChessBoard[x - 2, y + 1] == null)
+                    if (board.ChessBoard[x - 2, y + 1] == null)
                     {
                         availableMoves.Add(new int[] { x - 2, y + 1 });
                     }
-                    else if(board.ChessBoard[x - 2, y + 1].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x - 2, y + 1].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x - 2, y + 1 });
                     }
                 }
 
-                if(x - 2 >= 0 && y - 1 >= 0)
+                if (x - 2 >= 0 && y - 1 >= 0)
                 {
-                    if(board.ChessBoard[x - 2, y - 1] == null)
+                    if (board.ChessBoard[x - 2, y - 1] == null)
                     {
                         availableMoves.Add(new int[] { x - 2, y - 1 });
                     }
-                    else if(board.ChessBoard[x - 2, y - 1].Color.ToLower() != Color.ToLower())
+                    else if (board.ChessBoard[x - 2, y - 1].Color.ToLower() != Color.ToLower())
                     {
                         availableMoves.Add(new int[] { x - 2, y - 1 });
                     }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChessLogic.Pieces
 {
@@ -86,7 +83,7 @@ namespace ChessLogic.Pieces
                     }
                 }
 
-                if(x + 1 < 8 && y + 1 < 8)
+                if (x + 1 < 8 && y + 1 < 8)
                 {
                     if (board.ChessBoard[x + 1, y + 1] == null)
                     {
@@ -97,7 +94,7 @@ namespace ChessLogic.Pieces
                         availableMoves.Add(new int[] { x + 1, y + 1 });
                     }
                 }
-                if(x + 1 < 8 && y - 1 >= 0)
+                if (x + 1 < 8 && y - 1 >= 0)
                 {
                     if (board.ChessBoard[x + 1, y - 1] == null)
                     {
@@ -108,7 +105,7 @@ namespace ChessLogic.Pieces
                         availableMoves.Add(new int[] { x + 1, y - 1 });
                     }
                 }
-                if(x - 1 >= 0 && y + 1 < 8)
+                if (x - 1 >= 0 && y + 1 < 8)
                 {
                     if (board.ChessBoard[x - 1, y + 1] == null)
                     {
@@ -119,7 +116,7 @@ namespace ChessLogic.Pieces
                         availableMoves.Add(new int[] { x - 1, y + 1 });
                     }
                 }
-                if(x - 1 >= 0 && y - 1 >= 0)
+                if (x - 1 >= 0 && y - 1 >= 0)
                 {
                     if (board.ChessBoard[x - 1, y - 1] == null)
                     {
@@ -155,21 +152,21 @@ namespace ChessLogic.Pieces
                     }
                 }
             }
-            
+
             return availableMoves;
         }
 
-        public bool availableMovesContains(int [] position, Board.Board board, int x, int y)
+        public bool availableMovesContains(int[] position, Board.Board board, int x, int y)
         {
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for(int j = 0; j < 8; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    if(board.ChessBoard[i, j] != null)
+                    if (board.ChessBoard[i, j] != null)
                     {
-                        if(board.ChessBoard[i, j].Name!=Name && board.ChessBoard[i, j].Color.ToLower() != Color.ToLower())
+                        if (board.ChessBoard[i, j].Name != Name && board.ChessBoard[i, j].Color.ToLower() != Color.ToLower())
                         {
-                            foreach(var move in board.ChessBoard[i, j].availableMoves(board))
+                            foreach (var move in board.ChessBoard[i, j].availableMoves(board))
                             {
                                 if (move.SequenceEqual(position))
                                 {

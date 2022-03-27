@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChessLogic.Pieces
 {
@@ -37,15 +33,15 @@ namespace ChessLogic.Pieces
             if (x != -1)
             {
                 //moves incrementing x and y
-                for (int i=1; i<8; i++)
+                for (int i = 1; i < 8; i++)
                 {
-                    if(x+i < 8 && y+i < 8)
+                    if (x + i < 8 && y + i < 8)
                     {
-                        if (board.ChessBoard[x+i, y + i] == null)
+                        if (board.ChessBoard[x + i, y + i] == null)
                         {
                             availableMoves.Add(new int[] { x + i, y + i });
                         }
-                        else if(board.ChessBoard[x + i, y + i].Color.ToLower() != Color.ToLower())
+                        else if (board.ChessBoard[x + i, y + i].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x + i, y + i });
                             break;
@@ -57,15 +53,15 @@ namespace ChessLogic.Pieces
                     }
                 }
                 //moves decrementing x and y
-                for (int i=1; i<8; i++)
+                for (int i = 1; i < 8; i++)
                 {
-                    if(x-i >= 0 && y-i >= 0)
+                    if (x - i >= 0 && y - i >= 0)
                     {
-                        if(board.ChessBoard[x - i, y - i] == null)
+                        if (board.ChessBoard[x - i, y - i] == null)
                         {
                             availableMoves.Add(new int[] { x - i, y - i });
                         }
-                        else if(board.ChessBoard[x - i, y - i].Color.ToLower() != Color.ToLower())
+                        else if (board.ChessBoard[x - i, y - i].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x - i, y - i });
                             break;
@@ -77,15 +73,15 @@ namespace ChessLogic.Pieces
                     }
                 }
                 //moves decrementing x and incrementing y
-                for (int i=1; i<8; i++)
+                for (int i = 1; i < 8; i++)
                 {
-                    if(x-i >= 0 && y+i < 8)
+                    if (x - i >= 0 && y + i < 8)
                     {
-                        if(board.ChessBoard[x - i, y + i] == null)
+                        if (board.ChessBoard[x - i, y + i] == null)
                         {
                             availableMoves.Add(new int[] { x - i, y + i });
                         }
-                        else if(board.ChessBoard[x - i, y + i].Color.ToLower() != Color.ToLower())
+                        else if (board.ChessBoard[x - i, y + i].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x - i, y + i });
                             break;
@@ -97,15 +93,15 @@ namespace ChessLogic.Pieces
                     }
                 }
                 //moves incrementing x and decrementing y
-                for (int i=1; i<8; i++)
+                for (int i = 1; i < 8; i++)
                 {
-                    if(x + i < 8 && y - i >= 0)
+                    if (x + i < 8 && y - i >= 0)
                     {
-                        if(board.ChessBoard[x + i, y - i] == null)
+                        if (board.ChessBoard[x + i, y - i] == null)
                         {
                             availableMoves.Add(new int[] { x + i, y - i });
                         }
-                        else if(board.ChessBoard[x + i, y - i].Color.ToLower() != Color.ToLower())
+                        else if (board.ChessBoard[x + i, y - i].Color.ToLower() != Color.ToLower())
                         {
                             availableMoves.Add(new int[] { x + i, y - i });
                             break;
@@ -117,7 +113,7 @@ namespace ChessLogic.Pieces
                     }
                 }
             }
-            
+
 
             return availableMoves;
         }

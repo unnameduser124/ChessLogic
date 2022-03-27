@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChessLogic.Pieces
 {
@@ -18,7 +14,7 @@ namespace ChessLogic.Pieces
         public string Name { get; set; }
         public string Color { get; set; }
 
-        public List<int []> availableMoves(Board.Board board)
+        public List<int[]> availableMoves(Board.Board board)
         {
             int x = -1, y = -1;
             for (int i = 0; i < 8; i++)
@@ -33,7 +29,7 @@ namespace ChessLogic.Pieces
                 }
             }
 
-            List<int []> availableMoves = new List<int []>();
+            List<int[]> availableMoves = new List<int[]>();
             if (x != -1)
             {
                 //moves horizontally incrementing x
@@ -120,7 +116,7 @@ namespace ChessLogic.Pieces
                     }
                 }
             }
-            
+
             return availableMoves;
         }
 
