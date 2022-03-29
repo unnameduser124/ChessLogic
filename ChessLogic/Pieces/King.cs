@@ -3,11 +3,12 @@ using System.Linq;
 
 namespace ChessLogic.Pieces
 {
-    class King : Piece
+    public class King : Piece
     {
         public King(string Color)
         {
             NotationName = "K";
+            FENsymbol = "k";
             Name = "King";
             CastlingLong = true;
             CastlingShort = true;
@@ -18,8 +19,9 @@ namespace ChessLogic.Pieces
         public string Color { get; set; }
         public bool CastlingLong { get; set; }
         public bool CastlingShort { get; set; }
+        public string FENsymbol { get; set; }
 
-        public List<int[]> availableMoves(Board.Board board)
+        public List<int[]> availableMoves(Board.Game board)
         {
             int x = -1, y = -1;
             for (int i = 0; i < 8; i++)
@@ -156,7 +158,7 @@ namespace ChessLogic.Pieces
             return availableMoves;
         }
 
-        public bool availableMovesContains(int[] position, Board.Board board, int x, int y)
+        public bool availableMovesContains(int[] position, Board.Game board, int x, int y)
         {
             for (int i = 0; i < 8; i++)
             {

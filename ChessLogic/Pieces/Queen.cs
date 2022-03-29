@@ -7,14 +7,16 @@ namespace ChessLogic.Pieces
         public Queen(string Color)
         {
             NotationName = "Q";
+            FENsymbol = "q";
             Name = "Queen";
             this.Color = Color;
         }
         public string NotationName { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
+        public string FENsymbol { get; set; }
 
-        public List<int[]> availableMoves(Board.Board board)
+        public List<int[]> availableMoves(Board.Game board)
         {
             int x = -1, y = -1;
             for (int i = 0; i < 8; i++)

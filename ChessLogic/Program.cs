@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ChessLogic
 {
@@ -12,7 +14,7 @@ namespace ChessLogic
             {
                 return (char)(cord + 97);
             }
-            var board = new Board.Board("test");
+            var board = new Board.Game();
 
             void position()
             {
@@ -29,21 +31,50 @@ namespace ChessLogic
                     }
                 }
             }
-
-            void move(int fromX, int fromY, int toX, int toY, string promotion = "")
+            int [] generateRandomMove()
             {
-                position();
-
-                Console.WriteLine("Check: " + board.check());
-
-                Console.WriteLine("Move success: " + board.movePiece(fromX, fromY, toX, toY, promotion));
+                var randomX = 0;
+                var randomY = 0;
+                Random rnd = new Random();
+                randomX = rnd.Next(9);
+                randomY = rnd.Next(9);
+                //Console.Write(randomX);
+                Thread.Sleep((randomX + 1));
+                return new int[] { randomX, randomY };
             }
-            move(0, 6, 0, 4);
-            move(1, 4, 0, 5);
-            move(1, 1, 1, 3);
-            move(0, 3, 1, 2);
-            position();
+            void randomMove()
+            {
+                var move = generateRandomMove();
+                var randomX  = move[0];
+                var randomY = move[1];
+                if(randomX<8 && randomX>=0 && randomY<8 && randomY >= 0)
+                {
+                    if(board.ChessBoard[randomX, randomY] != null)
+                    {
+                        if(board.ChessBoard[randomX, randomY].availableMoves(board).Count > 0)
+                        {
+                            int x = 0;
+                            int y = 0;
+                            var moveList = board.ChessBoard[randomX, randomY].availableMoves(board);
+                            var random = new Random();
+                            var moveItem = random.Next(moveList.Count);
+                            x = moveList[moveItem][0];
+                            y = moveList[moveItem][1];
+                            if (!board.movePiece(randomX, randomY, x, y))
+                            {
+                                Console.Write($".");
+                            }
+                        }
+                    }
+                }
+                
+            }
 
+            position();
+            while (board.movesSinceLastCapture < 101 || board.gameStatus != Board.Game.GameStatus.inProgress)
+            {
+                randomMove();
+            }
 
             Console.ReadLine();
         }
