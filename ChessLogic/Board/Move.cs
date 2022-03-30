@@ -13,26 +13,25 @@ namespace ChessLogic.Board
 
         public Piece piecePromoted { get; set; }
 
+        public string pieceName { get; set; }
+
+        public int turnNumber { get; set; }
+
         public bool Castling { get; set; }
 
-        public Move(int fromX, int fromY, int toX, int toY, Piece pieceCaptured)
+        public bool Check { get; set; }
+
+        public Move(int fromX, int fromY, int toX, int toY, string pieceName, int turnNumber, Piece pieceCaptured = null, Piece piecePromoted = null)
         {
             this.fromX = fromX;
             this.fromY = fromY;
             this.toX = toX;
             this.toY = toY;
             this.pieceCaptured = pieceCaptured;
-            this.piecePromoted = null;
-        }
-
-        public Move(int fromX, int fromY, int toX, int toY)
-        {
-            this.fromX = fromX;
-            this.fromY = fromY;
-            this.toX = toX;
-            this.toY = toY;
-            this.pieceCaptured = null;
-            this.piecePromoted = null;
+            this.piecePromoted = piecePromoted;
+            this.pieceName = pieceName;
+            this.turnNumber = turnNumber;
+            Castling = false;
         }
     }
 }

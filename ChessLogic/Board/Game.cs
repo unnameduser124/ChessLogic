@@ -12,21 +12,18 @@ namespace ChessLogic.Board
             startingPosition();
         }
 
-        public Game(string position)
+        public Game(string position = "")
         {
             ChessBoard = new Piece[8, 8];
             MoveHistory = new List<Move>();
             PositionHistory = new List<String>();
             whiteTurn = true;
-            moveCounter = 0;
+            turnCounter = 1;
             movesSinceLastCapture = 0;
             gameStatus = GameStatus.inProgress;
-            if (position.ToLower() == "test")
+            if (position.ToLower() != "")
             {
-                ChessBoard[0, 6] = new Pawn("Black");
-                ChessBoard[1, 4] = new Pawn("White");
-                ChessBoard[0, 3] = new Pawn("Black");
-                ChessBoard[1, 1] = new Pawn("White");
+                setupFromFEN(position);
             }
             else
             {
@@ -41,7 +38,7 @@ namespace ChessLogic.Board
 
         public bool whiteTurn { get; set; }
 
-        public int moveCounter { get; set; }
+        public int turnCounter { get; set; }
 
         public int movesSinceLastCapture { get; set; }
 
@@ -61,7 +58,7 @@ namespace ChessLogic.Board
             MoveHistory = new List<Move>();
             PositionHistory = new List<String>();
             whiteTurn = true;
-            moveCounter = 0;
+            turnCounter = 1;
             movesSinceLastCapture = 0;
             gameStatus = GameStatus.inProgress;
             for (int i = 0; i < 8; i++)
@@ -103,7 +100,7 @@ namespace ChessLogic.Board
                 {
                     return false;
                 }
-                Console.Write($"from = {(char)(fromX + 97)}{fromY + 1} to = {(char)(toX + 97)}{toY + 1} Check white: {checkWhite()} Check black: {checkBlack()}");
+                Console.Write($"{ChessBoard[fromX, fromY].NotationName}{(char)(fromX + 97)}{fromY + 1} to {ChessBoard[fromX, fromY].NotationName}{(char)(toX + 97)}{toY + 1} ");
                 void EnPassantCheck()
                 {
                     if (ChessBoard[fromX, fromY].Name.ToLower() == "pawn")
@@ -203,11 +200,19 @@ namespace ChessLogic.Board
                     {
                         if (ChessBoard[fromX, fromY].Name == "King" && fromX - 2 == toX)
                         {
+                            if((ChessBoard[fromX, fromY].Color.ToLower()=="white" && checkWhite()) || (ChessBoard[fromX, fromY].Color.ToLower() == "black" && checkBlack()))
+                            {
+                                return;
+                            }
                             (ChessBoard[fromX - 4, fromY], ChessBoard[toX + 1, toY]) = (ChessBoard[toX + 1, toY], ChessBoard[fromX - 4, fromY]);
                             MoveHistory.Last().Castling = true;
                         }
                         else if (ChessBoard[fromX, fromY].Name == "King" && fromX + 2 == toX)
                         {
+                            if ((ChessBoard[fromX, fromY].Color.ToLower() == "white" && checkWhite()) || (ChessBoard[fromX, fromY].Color.ToLower() == "black" && checkBlack()))
+                            {
+                                return;
+                            }
                             (ChessBoard[fromX + 3, fromY], ChessBoard[toX - 1, toY]) = (ChessBoard[toX - 1, toY], ChessBoard[fromX + 3, fromY]);
                             MoveHistory.Last().Castling = true;
                         }
@@ -266,7 +271,7 @@ namespace ChessLogic.Board
                                     if (destination != null)
                                     {
                                         //actions performed if a piece is captured
-                                        MoveHistory.Add(new Move(fromX, fromY, toX, toY, destination.copy()));
+                                        MoveHistory.Add(new Move(fromX, fromY, toX, toY, ChessBoard[fromX, fromY].NotationName, turnCounter, destination.copy()));
                                         savePosition();
                                         ChessBoard[toX, toY] = null;
                                         pawnPromotion();
@@ -274,7 +279,7 @@ namespace ChessLogic.Board
                                     else
                                     {
                                         //actions performed if a piece is moved to an empty square 
-                                        MoveHistory.Add(new Move(fromX, fromY, toX, toY));
+                                        MoveHistory.Add(new Move(fromX, fromY, toX, toY, ChessBoard[fromX, fromY].NotationName, turnCounter));
                                         savePosition();
                                         castleCheck();
                                         EnPassantCheck();
@@ -310,7 +315,10 @@ namespace ChessLogic.Board
                                     }
                                     enPassantCancel();
                                     whiteTurn = !whiteTurn;
-                                    moveCounter++;
+                                    if (!whiteTurn)
+                                    {
+                                        turnCounter++;
+                                    }
                                     if (MoveHistory.Last().pieceCaptured == null)
                                     {
                                         movesSinceLastCapture++;
@@ -327,7 +335,10 @@ namespace ChessLogic.Board
                                     {
                                         gameStatus = GameStatus.draw;
                                     }
-                                    Console.WriteLine($"from = {(char)(fromX + 97)}{fromY + 1} to = {(char)(toX + 97)}{toY + 1}");
+                                    if (checkWhite() || checkBlack())
+                                    {
+                                        MoveHistory.Last().Check = true;
+                                    }
                                     return true;
                                 }
                                 break;
@@ -691,7 +702,7 @@ namespace ChessLogic.Board
             }
 
             fen += $"{movesSinceLastCapture} ";
-            fen += $"{moveCounter}";
+            fen += $"{turnCounter}";
 
             Console.WriteLine($"FEN: {fen}");
             return fen;
@@ -750,6 +761,301 @@ namespace ChessLogic.Board
                 return true;
             }
             return false;
+        }
+
+        void setupFromFEN(string fen)
+        {
+            var column = 0;
+            var row = 7;
+            var index = 0;
+            foreach(var item in fen)
+            {
+                if (item == 'k')
+                {
+                    ChessBoard[column, row] = new King("black");
+                    column++;
+                }
+                else if(item == 'K')
+                {
+                    ChessBoard[column, row] = new King("white");
+                    column++;
+                }
+                else if(item == 'q')
+                {
+                    ChessBoard[column, row] = new Queen("black");
+                    column++;
+                }
+                else if(item == 'Q')
+                {
+                    ChessBoard[column, row] = new Queen("white");
+                    column++;
+                }
+                else if(item == 'b')
+                {
+                    ChessBoard[column, row] = new Bishop("black");
+                    column++;
+                }
+                else if(item == 'B')
+                {
+                    ChessBoard[column, row] = new Bishop("white");
+                    column++;
+                }
+                else if(item == 'n')
+                {
+                    ChessBoard[column, row] = new Knight("black");
+                    column++;
+                }
+                else if(item == 'N')
+                {
+                    ChessBoard[column, row] = new Knight("white");
+                    column++;
+                }
+                else if(item == 'p')
+                {
+                    ChessBoard[column, row] = new Pawn("black");
+                    column++;
+                }
+                else if(item == 'P')
+                {
+                    ChessBoard[column, row] = new Pawn("white");
+                    column++;
+                }
+                else if(item == 'r')
+                {
+                    ChessBoard[column, row] = new Rook("black");
+                    column++;
+                }
+                else if(item == 'R')
+                {
+                    ChessBoard[column, row] = new Rook("white");
+                    column++;
+                }
+                else if(item == '/')
+                {
+                    column = 0;
+                    row--;
+                }
+                else
+                {
+                    column += item - '0';
+                }
+                if(item == ' ')
+                {
+                    index = fen.IndexOf(item);
+                    break;
+                }
+            }
+
+            whiteTurn = fen[++index] == 'w';
+            index++; 
+            
+            var kingWhite = findKing("white");
+            var kingBlack = findKing("black");
+            if (kingWhite.Color.ToLower() != "none")
+            {
+                kingWhite.CastlingLong = false;
+                kingWhite.CastlingShort = false;
+            }
+            if (kingBlack.Color.ToLower() != "none")
+            {
+                kingBlack.CastlingLong = false;
+                kingBlack.CastlingShort = false;
+            }
+            while (fen[++index]!=' ')
+            {
+                if (fen[index] == 'K')
+                {
+                    if (kingWhite.Color.ToLower() != "none")
+                    {
+                        kingWhite.CastlingShort = true;
+                    }
+                }
+                else if (fen[index] == 'k')
+                {
+                    if (kingBlack.Color.ToLower() != "none")
+                    {
+                        kingBlack.CastlingShort = true;
+                    }
+                }
+                else if (fen[index] == 'Q')
+                {
+                    if (kingWhite.Color.ToLower() != "none")
+                    {
+                        kingWhite.CastlingLong = true;
+                    }
+                }
+                else if (fen[index] == 'q')
+                {
+                    if (kingBlack.Color.ToLower() != "none")
+                    {
+                        kingBlack.CastlingLong = true;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+
+            }
+
+            index = fen.Length;
+            var movesString = "";
+            while(fen[--index]!=' ')
+            {
+                movesString += fen[index];
+            }
+            movesString = Reverse(movesString);
+            turnCounter = int.Parse(movesString);
+            movesString = "";
+            while (fen[--index] != ' ')
+            {
+                movesString += fen[index];
+            }
+            movesString = Reverse(movesString);
+            movesSinceLastCapture = int.Parse(movesString);
+
+            movesString = "";
+            while (fen[--index] != ' ')
+            {
+                movesString += fen[index];
+            }
+            movesString = Reverse(movesString);
+            if (movesString != "-")
+            {
+                var enPassantPosition = cordToIntArray(movesString);
+                if (ChessBoard[enPassantPosition[0], enPassantPosition[1] - 1] != null)
+                {
+                    if (ChessBoard[enPassantPosition[0], enPassantPosition[1] - 1].Name.ToLower() == "pawn")
+                    {
+                        (ChessBoard[enPassantPosition[0], enPassantPosition[1] - 1] as Pawn).EnPassant = true;
+                    }
+                }
+                else if (ChessBoard[enPassantPosition[0], enPassantPosition[1] + 1] != null)
+                {
+                    if (ChessBoard[enPassantPosition[0], enPassantPosition[1] + 1].Name.ToLower() == "pawn")
+                    {
+                        (ChessBoard[enPassantPosition[0], enPassantPosition[1] + 1] as Pawn).EnPassant = true;
+                    }
+                }
+            }
+            
+        }
+
+        int[] cordToIntArray(string cord)
+        {
+            var position = new int [2];
+            position[0] = cord[0] - 97;
+            position[1] = cord[1] - '0' - 1;
+
+            return position;
+        }
+
+        string Reverse(string s)
+        {
+            char[] charArray = s.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
+        }
+
+        public string generatePGN()
+        {
+            var turn = false;
+            var PGNstring = "";
+            foreach(var move in MoveHistory)
+            {
+                if(move.pieceCaptured == null)
+                {
+                    if (turn == false)
+                    {
+                        if (move.Check)
+                        {
+                            PGNstring += $" {move.turnNumber}. {move.pieceName}{convertCords(new int[] { move.toX, move.toY })}+";
+                            turn = !turn;
+                        }
+                        else
+                        {
+                            PGNstring += $" {move.turnNumber}. {move.pieceName}{convertCords(new int[] { move.toX, move.toY })}";
+                            turn = !turn;
+                        }
+                    }
+                    else
+                    {
+                        if (move.Check)
+                        {
+                            PGNstring += $" {move.pieceName}{convertCords(new int[] { move.toX, move.toY })}+";
+                            turn = !turn;
+                        }
+                        else
+                        {
+                            PGNstring += $" {move.pieceName}{convertCords(new int[] { move.toX, move.toY })}";
+                            turn = !turn;
+                        }
+                    }
+                }
+                else
+                {
+                    if (turn == false)
+                    {
+                        if(move.pieceName == "")
+                        {
+                            if (move.Check)
+                            {
+                                PGNstring += $" {move.turnNumber}. {convertCordToChar(move.fromX)}x{convertCords(new int[] { move.toX, move.toY })}+";
+                                turn = !turn;
+                            }
+                            else
+                            {
+                                PGNstring += $" {move.turnNumber}. {convertCordToChar(move.fromX)}x{convertCords(new int[] { move.toX, move.toY })}";
+                                turn = !turn;
+                            }
+                        }
+                        else
+                        {
+                            if (move.Check)
+                            {
+                                PGNstring += $" {move.turnNumber}. {move.pieceName}x{convertCords(new int[] { move.toX, move.toY })}+";
+                                turn = !turn;
+                            }
+                            else
+                            {
+                                PGNstring += $" {move.turnNumber}. {move.pieceName}x{convertCords(new int[] { move.toX, move.toY })}";
+                                turn = !turn;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(move.pieceName == "")
+                        {
+                            if (move.Check)
+                            {
+                                PGNstring += $" {convertCordToChar(move.fromX)}x{convertCords(new int[] { move.toX, move.toY })}+";
+                                turn = !turn;
+                            }
+                            else
+                            {
+                                PGNstring += $" {convertCordToChar(move.fromX)}x{convertCords(new int[] { move.toX, move.toY })}";
+                                turn = !turn;
+                            }
+                        }
+                        else
+                        {
+                            if (move.Check)
+                            {
+                                PGNstring += $" {move.pieceName}x{convertCords(new int[] { move.toX, move.toY })}+";
+                                turn = !turn;
+                            }
+                            else
+                            {
+                                PGNstring += $" {move.pieceName}x{convertCords(new int[] { move.toX, move.toY })}";
+                                turn = !turn;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return PGNstring;
         }
     }
 }

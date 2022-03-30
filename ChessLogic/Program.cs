@@ -42,7 +42,7 @@ namespace ChessLogic
                 Thread.Sleep((randomX + 1));
                 return new int[] { randomX, randomY };
             }
-            void randomMove()
+            bool randomMove()
             {
                 var move = generateRandomMove();
                 var randomX  = move[0];
@@ -63,19 +63,23 @@ namespace ChessLogic
                             if (!board.movePiece(randomX, randomY, x, y))
                             {
                                 Console.Write($".");
+                                return false;
                             }
                         }
                     }
                 }
-                
+                return true;
             }
 
             position();
-            while (board.movesSinceLastCapture < 101 || board.gameStatus != Board.Game.GameStatus.inProgress)
+            board.FEN();
+            while (board.gameStatus == Board.Game.GameStatus.inProgress || board.turnCounter<51)
             {
                 randomMove();
             }
-
+            Console.WriteLine(board.gameStatus);
+            board.FEN();
+            Console.WriteLine(board.generatePGN());
             Console.ReadLine();
         }
     }
