@@ -65,6 +65,10 @@ namespace ChessLogic
                                 Console.Write($".");
                                 return false;
                             }
+                            else
+                            {
+                                Console.WriteLine($"FEN: {board.FEN()}");
+                            }
                         }
                     }
                 }
@@ -72,13 +76,13 @@ namespace ChessLogic
             }
 
             position();
-            board.FEN();
-            while (board.gameStatus == Board.Game.GameStatus.inProgress || board.turnCounter<51)
+            Console.WriteLine(board.FEN());
+            while (board.gameStatus == Board.Game.GameStatus.inProgress && board.turnCounter<101)
             {
                 randomMove();
             }
             Console.WriteLine(board.gameStatus);
-            board.FEN();
+            board.generatePGN();
             Console.WriteLine(board.generatePGN());
             Console.ReadLine();
         }

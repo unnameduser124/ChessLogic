@@ -21,6 +21,8 @@ namespace ChessLogic.Board
 
         public bool Check { get; set; }
 
+        public bool Checkmate { get; set; }
+
         public Move(int fromX, int fromY, int toX, int toY, string pieceName, int turnNumber, Piece pieceCaptured = null, Piece piecePromoted = null)
         {
             this.fromX = fromX;
