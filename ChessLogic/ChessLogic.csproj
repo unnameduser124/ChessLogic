@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Board\Game.cs" />
     <Compile Include="Board\Move.cs" />
+    <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Pieces\Bishop.cs" />
     <Compile Include="Pieces\King.cs" />
     <Compile Include="Pieces\Knight.cs" />

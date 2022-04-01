@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ChessLogic.Pieces
 {
@@ -153,7 +152,7 @@ namespace ChessLogic.Pieces
                             }
                         }
                     }
-                    if (x + 1 < 8 && y - 1 >=0)
+                    if (x + 1 < 8 && y - 1 >= 0)
                     {
                         if (board.ChessBoard[x + 1, y] != null && board.ChessBoard[x + 1, y - 1] == null)
                         {
@@ -168,7 +167,7 @@ namespace ChessLogic.Pieces
                     }
 
                 }
-                
+
             }
             return availableMoves;
         }
