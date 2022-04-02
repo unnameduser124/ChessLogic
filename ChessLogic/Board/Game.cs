@@ -86,6 +86,7 @@ namespace ChessLogic.Board
 
         public bool movePiece(int fromX, int fromY, int toX, int toY, string promotion = "")
         {
+            gameStatusCheck(fromX, fromY, toX, toY);
             if (gameStatus == GameStatus.inProgress)
             {
                 //checking if moved piece is in the right color
@@ -161,7 +162,6 @@ namespace ChessLogic.Board
                                     }
 
                                     //external function
-                                    gameStatusCheck(fromX, fromY, toX, toY);
                                     return true;
                                 }
                                 break;
@@ -358,7 +358,7 @@ namespace ChessLogic.Board
         {
             if (turnCounter >= 0)
             {
-                Console.WriteLine($"{ChessBoard[toX, toY].NotationName}{(char)(fromX + 97)}{fromY + 1} to {ChessBoard[toX, toY].NotationName}{(char)(toX + 97)}{toY + 1} ");
+                Console.WriteLine($"{ChessBoard[fromX, fromY].NotationName}{(char)(fromX + 97)}{fromY + 1} to {ChessBoard[fromX, fromY].NotationName}{(char)(toX + 97)}{toY + 1} ");
                 if (positionDrawCheck())
                 {
                     Console.WriteLine($"Repetition");
@@ -383,6 +383,10 @@ namespace ChessLogic.Board
                     }
                 }
                 else if (movesSinceLastCapture > 99)
+                {
+                    gameStatus = GameStatus.draw;
+                }
+                else if (insufficientMaterial())
                 {
                     gameStatus = GameStatus.draw;
                 }
@@ -730,11 +734,76 @@ namespace ChessLogic.Board
             return true;
         }
 
+        bool insufficientMaterial()
+        {
+            int knightCounter = 0;
+            string bishopColor = "";
+            for(int i=0; i<8; i++)
+            {
+                for(int j=0; j < 8; j++)
+                {
+                    if (ChessBoard[i, j] != null)
+                    {
+                        if(ChessBoard[i,j].Name.ToLower() == "pawn")
+                        {
+                            return false;
+                        }
+                        else if (ChessBoard[i, j].Name.ToLower() == "rook")
+                        {
+                            return false;
+                        }
+                        else if (ChessBoard[i, j].Name.ToLower() == "queen")
+                        {
+                            return false;
+                        }
+                        else if (ChessBoard[i, j].Name.ToLower() == "bishop")
+                        {
+                            if (bishopColor == "")
+                            {
+                                if (i % 2 == j % 2)
+                                {
+                                    bishopColor = "black";
+                                }
+                                else
+                                {
+                                    bishopColor = "white";
+                                }
+                            }
+                            else
+                            {
+                                if(bishopColor == "white" && i % 2 == j % 2)
+                                {
+                                    return false;
+                                }
+                                else if(bishopColor == "black" && i % 2 != j % 2)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                        else if(ChessBoard[i,j].Name.ToLower() == "knight")
+                        {
+                            knightCounter++;
+                            if (knightCounter > 1)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
 
         public string generatePGN()
         {
             var turn = true;
             var PGNstring = "";
+            if (!MoveHistory.Any())
+            {
+                return "";
+            }
             foreach (var move in MoveHistory)
             {
                 if (move.pieceCaptured == null)
