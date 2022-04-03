@@ -35,5 +35,10 @@ namespace ChessLogic.Board
             this.turnNumber = turnNumber;
             Castling = false;
         }
+
+        public override string ToString()
+        {
+            return $"MOVE NUMBER: {turnNumber} FROM: {GlobalFunctions.convertCords(new int [] {fromX, fromY})}, TO: {GlobalFunctions.convertCords(new int[] { toX, toY })}";
+        }
     }
 }

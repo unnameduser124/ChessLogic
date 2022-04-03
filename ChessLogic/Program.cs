@@ -10,7 +10,9 @@ namespace ChessLogic
         {
             var game = new Game();
 
-            gameGenerator(game);
+            //gameGenerator(game);
+
+            GlobalFunctions.importPGN("1. d4 c5 2. dxc5 b6 3. cxb6 Qc7 4. b7 Nc6 5. bxa8=Q");
 
             Console.ReadLine();
         }
@@ -71,7 +73,7 @@ namespace ChessLogic
                 randomMove(game);
             }
             Console.WriteLine(game.gameStatus);
-            Console.WriteLine(game.generatePGN());
+            Console.WriteLine(GlobalFunctions.generatePGN(game));
         }
     }
 }
