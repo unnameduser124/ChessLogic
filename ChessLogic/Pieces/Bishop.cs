@@ -10,15 +10,28 @@ namespace ChessLogic.Pieces
             FENsymbol = "b";
             Name = "bishop";
             this.Color = Color;
+            x = -1;
+            y = -1;
+        }
+        public Bishop(string Color, int x, int y)
+        {
+            NotationName = "B";
+            FENsymbol = "b";
+            Name = "bishop";
+            this.Color = Color;
+            this.x = x;
+            this.y = y;
         }
         public string NotationName { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
         public string FENsymbol { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
 
         public List<int[]> availableMoves(Board.Game board)
         {
-            int x = -1, y = -1;
+            /*int x = -1, y = -1;
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -29,7 +42,7 @@ namespace ChessLogic.Pieces
                         y = j;
                     }
                 }
-            }
+            }*/
 
             List<int[]> availableMoves = new List<int[]>();
             if (x != -1)
@@ -122,7 +135,7 @@ namespace ChessLogic.Pieces
 
         public Piece copy()
         {
-            return new Bishop(Color);
+            return new Bishop(Color, x, y);
         }
     }
 }

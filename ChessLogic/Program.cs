@@ -9,10 +9,25 @@ namespace ChessLogic
         static void Main(string[] args)
         {
             var game = new Game();
-
             gameGenerator(game);
 
             Console.ReadLine();
+        }
+
+        static void position(Game game)
+        {
+            Console.WriteLine("Postion:");
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (game.ChessBoard[j, i] != null)
+                    {
+                        var piece = game.ChessBoard[j, i];
+                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1}|{convertCord(piece.x)}{piece.y+1} {piece.Color}");
+                    }
+                }
+            }
         }
 
         static char convertCord(int cord)

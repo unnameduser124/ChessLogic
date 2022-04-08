@@ -59,29 +59,29 @@ namespace ChessLogic.Board
             gameStatus = GameStatus.inProgress;
             for (int i = 0; i < 8; i++)
             {
-                ChessBoard[i, 1] = new Pawn("white");
-                ChessBoard[i, 6] = new Pawn("black");
+                ChessBoard[i, 1] = new Pawn("white", i, 1);
+                ChessBoard[i, 6] = new Pawn("black", i, 6);
             }
 
-            ChessBoard[0, 0] = new Rook("white");
-            ChessBoard[7, 0] = new Rook("white");
-            ChessBoard[0, 7] = new Rook("black");
-            ChessBoard[7, 7] = new Rook("black");
+            ChessBoard[0, 0] = new Rook("white", 0, 0);
+            ChessBoard[7, 0] = new Rook("white", 7, 0);
+            ChessBoard[0, 7] = new Rook("black", 0, 7);
+            ChessBoard[7, 7] = new Rook("black", 7, 7);
 
-            ChessBoard[1, 0] = new Knight("white");
-            ChessBoard[6, 0] = new Knight("white");
-            ChessBoard[1, 7] = new Knight("black");
-            ChessBoard[6, 7] = new Knight("black");
+            ChessBoard[1, 0] = new Knight("white", 1, 0);
+            ChessBoard[6, 0] = new Knight("white", 6, 0);
+            ChessBoard[1, 7] = new Knight("black", 1, 7);
+            ChessBoard[6, 7] = new Knight("black", 6, 7);
 
-            ChessBoard[2, 0] = new Bishop("white");
-            ChessBoard[5, 0] = new Bishop("white");
-            ChessBoard[2, 7] = new Bishop("black");
-            ChessBoard[5, 7] = new Bishop("black");
+            ChessBoard[2, 0] = new Bishop("white", 2, 0);
+            ChessBoard[5, 0] = new Bishop("white", 5, 0);
+            ChessBoard[2, 7] = new Bishop("black", 2, 7);
+            ChessBoard[5, 7] = new Bishop("black", 5, 7);
 
-            ChessBoard[3, 0] = new Queen("white");
-            ChessBoard[4, 0] = new King("white");
-            ChessBoard[3, 7] = new Queen("black");
-            ChessBoard[4, 7] = new King("black");
+            ChessBoard[3, 0] = new Queen("white", 3, 0);
+            ChessBoard[4, 0] = new King("white", 4, 0);
+            ChessBoard[3, 7] = new Queen("black", 3, 7);
+            ChessBoard[4, 7] = new King("black", 4, 7);
         }
 
         public bool movePiece(int fromX, int fromY, int toX, int toY, string promotion = "")
@@ -132,7 +132,8 @@ namespace ChessLogic.Board
                                     ChessBoard[toX, toY] = null;
                                     //actually moving a piece (swap of values in the board array)
                                     (ChessBoard[fromX, fromY], ChessBoard[toX, toY]) = (ChessBoard[toX, toY], ChessBoard[fromX, fromY]);
-
+                                    ChessBoard[toX, toY].x = toX;
+                                    ChessBoard[toX, toY].y = toY;
                                     if (!moveValidation(fromX, fromY, toX, toY))
                                     {
                                         return false;
@@ -218,19 +219,19 @@ namespace ChessLogic.Board
         void castlingRights(int fromX, int fromY, int toX, int toY)
         {
             //revoking king's castling rights when it moves
-            if (ChessBoard[toX, toY].Name == "King")
+            if (ChessBoard[toX, toY].Name == "king")
             {
                 (ChessBoard[toX, toY] as King).CastlingLong = false;
                 (ChessBoard[toX, toY] as King).CastlingShort = false;
             }
             //revoking king's castling rights if it's color rook moves
-            else if (ChessBoard[toX, toY].Name == "Rook")
+            else if (ChessBoard[toX, toY].Name == "rook")
             {
                 if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 0, 0 }))
                 {
                     if (ChessBoard[4, 0] != null)
                     {
-                        if (ChessBoard[4, 0].Name == "King")
+                        if (ChessBoard[4, 0].Name == "king")
                         {
                             (ChessBoard[4, 0] as King).CastlingLong = false;
                         }
@@ -240,7 +241,7 @@ namespace ChessLogic.Board
                 {
                     if (ChessBoard[4, 0] != null)
                     {
-                        if (ChessBoard[4, 0].Name == "King")
+                        if (ChessBoard[4, 0].Name == "king")
                         {
                             (ChessBoard[4, 0] as King).CastlingShort = false;
                         }
@@ -250,7 +251,7 @@ namespace ChessLogic.Board
                 {
                     if (ChessBoard[4, 7] != null)
                     {
-                        if (ChessBoard[4, 7].Name == "King")
+                        if (ChessBoard[4, 7].Name == "king")
                         {
                             (ChessBoard[4, 7] as King).CastlingLong = false;
                         }
@@ -260,7 +261,7 @@ namespace ChessLogic.Board
                 {
                     if (ChessBoard[4, 7] != null)
                     {
-                        if (ChessBoard[4, 7].Name == "King")
+                        if (ChessBoard[4, 7].Name == "king")
                         {
                             (ChessBoard[4, 7] as King).CastlingShort = false;
                         }
@@ -274,22 +275,24 @@ namespace ChessLogic.Board
             //castling, meaning moving rook to proper square depending whether it is a long or short castle
             if (ChessBoard[fromX, fromY] != null)
             {
-                if (ChessBoard[fromX, fromY].Name == "King" && fromX - 2 == toX)
+                if (ChessBoard[fromX, fromY].Name == "king" && fromX - 2 == toX)
                 {
                     if ((ChessBoard[fromX, fromY].Color == "white" && checkwhite()) || (ChessBoard[fromX, fromY].Color == "black" && checkblack()))
                     {
                         return;
                     }
                     (ChessBoard[fromX - 4, fromY], ChessBoard[toX + 1, toY]) = (ChessBoard[toX + 1, toY], ChessBoard[fromX - 4, fromY]);
+                    ChessBoard[toX + 1, toY].x = toX + 1;
                     MoveHistory.Last().Castling = true;
                 }
-                else if (ChessBoard[fromX, fromY].Name == "King" && fromX + 2 == toX)
+                else if (ChessBoard[fromX, fromY].Name == "king" && fromX + 2 == toX)
                 {
                     if ((ChessBoard[fromX, fromY].Color == "white" && checkwhite()) || (ChessBoard[fromX, fromY].Color == "black" && checkblack()))
                     {
                         return;
                     }
                     (ChessBoard[fromX + 3, fromY], ChessBoard[toX - 1, toY]) = (ChessBoard[toX - 1, toY], ChessBoard[fromX + 3, fromY]);
+                    ChessBoard[toX - 1, toY].x = toX - 1;
                     MoveHistory.Last().Castling = true;
                 }
             }
@@ -305,19 +308,19 @@ namespace ChessLogic.Board
                 {
                     if (promotion == "queen")
                     {
-                        ChessBoard[fromX, fromY] = new Queen(movedPiece.Color);
+                        ChessBoard[fromX, fromY] = new Queen(movedPiece.Color, fromX, fromY);
                     }
                     else if (promotion == "knight")
                     {
-                        ChessBoard[fromX, fromY] = new Knight(movedPiece.Color);
+                        ChessBoard[fromX, fromY] = new Knight(movedPiece.Color, fromX, fromY);
                     }
                     else if (promotion == "rook")
                     {
-                        ChessBoard[fromX, fromY] = new Rook(movedPiece.Color);
+                        ChessBoard[fromX, fromY] = new Rook(movedPiece.Color, fromX, fromY);
                     }
                     else if (promotion == "bishop")
                     {
-                        ChessBoard[fromX, fromY] = new Bishop(movedPiece.Color);
+                        ChessBoard[fromX, fromY] = new Bishop(movedPiece.Color, fromX, fromY);
                     }
                     else
                     {
@@ -399,6 +402,8 @@ namespace ChessLogic.Board
             {
                 //moves back the piece that was moved in the last turn
                 (ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY], ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY]) = (ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY], ChessBoard[MoveHistory.Last().toX, MoveHistory.Last().toY]);
+                ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY].x = MoveHistory.Last().fromX;
+                ChessBoard[MoveHistory.Last().fromX, MoveHistory.Last().fromY].y = MoveHistory.Last().fromY;
 
                 //places back captured piece if any was captured
                 if (MoveHistory.Last().pieceCaptured != null)
@@ -443,10 +448,14 @@ namespace ChessLogic.Board
                     if (fromX - 2 == toX)
                     {
                         (ChessBoard[3, fromY], ChessBoard[0, toY]) = (ChessBoard[0, toY], ChessBoard[3, fromY]);
+                        ChessBoard[0, fromY].x = 3;
+                        ChessBoard[0, fromY].y = fromY;
                     }
                     else
                     {
                         (ChessBoard[5, fromY], ChessBoard[7, toY]) = (ChessBoard[7, toY], ChessBoard[5, fromY]);
+                        ChessBoard[7, toY].x = 7;
+                        ChessBoard[7, toY].y = fromY;
                     }
                 }
 
@@ -457,7 +466,7 @@ namespace ChessLogic.Board
                     var fromY = MoveHistory.Last().fromY;
                     var toX = MoveHistory.Last().toX;
                     var toY = MoveHistory.Last().toY;
-                    ChessBoard[fromX, fromY] = new Pawn(ChessBoard[fromX, fromY].Color);
+                    ChessBoard[fromX, fromY] = new Pawn(ChessBoard[fromX, fromY].Color, fromX, fromY);
                     ChessBoard[toX, toY] = MoveHistory.Last().pieceCaptured;
                 }
 
@@ -724,7 +733,6 @@ namespace ChessLogic.Board
                     }
                 }
             }
-
             return true;
         }
 
@@ -841,62 +849,62 @@ namespace ChessLogic.Board
             {
                 if (item == 'k')
                 {
-                    ChessBoard[column, row] = new King("black");
+                    ChessBoard[column, row] = new King("black", column, row);
                     column++;
                 }
                 else if (item == 'K')
                 {
-                    ChessBoard[column, row] = new King("white");
+                    ChessBoard[column, row] = new King("white", column, row);
                     column++;
                 }
                 else if (item == 'q')
                 {
-                    ChessBoard[column, row] = new Queen("black");
+                    ChessBoard[column, row] = new Queen("black", column, row);
                     column++;
                 }
                 else if (item == 'Q')
                 {
-                    ChessBoard[column, row] = new Queen("white");
+                    ChessBoard[column, row] = new Queen("white", column, row);
                     column++;
                 }
                 else if (item == 'b')
                 {
-                    ChessBoard[column, row] = new Bishop("black");
+                    ChessBoard[column, row] = new Bishop("black", column, row);
                     column++;
                 }
                 else if (item == 'B')
                 {
-                    ChessBoard[column, row] = new Bishop("white");
+                    ChessBoard[column, row] = new Bishop("white", column, row);
                     column++;
                 }
                 else if (item == 'n')
                 {
-                    ChessBoard[column, row] = new Knight("black");
+                    ChessBoard[column, row] = new Knight("black", column, row);
                     column++;
                 }
                 else if (item == 'N')
                 {
-                    ChessBoard[column, row] = new Knight("white");
+                    ChessBoard[column, row] = new Knight("white", column, row);
                     column++;
                 }
                 else if (item == 'p')
                 {
-                    ChessBoard[column, row] = new Pawn("black");
+                    ChessBoard[column, row] = new Pawn("black", column, row);
                     column++;
                 }
                 else if (item == 'P')
                 {
-                    ChessBoard[column, row] = new Pawn("white");
+                    ChessBoard[column, row] = new Pawn("white", column, row);
                     column++;
                 }
                 else if (item == 'r')
                 {
-                    ChessBoard[column, row] = new Rook("black");
+                    ChessBoard[column, row] = new Rook("black", column, row);
                     column++;
                 }
                 else if (item == 'R')
                 {
-                    ChessBoard[column, row] = new Rook("white");
+                    ChessBoard[column, row] = new Rook("white", column, row);
                     column++;
                 }
                 else if (item == '/')

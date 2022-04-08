@@ -13,6 +13,19 @@ namespace ChessLogic.Pieces
             CastlingLong = true;
             CastlingShort = true;
             this.Color = Color;
+            x = -1;
+            y = -1;
+        }
+        public King(string Color, int x, int y)
+        {
+            NotationName = "K";
+            FENsymbol = "k";
+            Name = "king";
+            CastlingLong = true;
+            CastlingShort = true;
+            this.Color = Color;
+            this.x = x;
+            this.y = y;
         }
         public string NotationName { get; set; }
         public string Name { get; set; }
@@ -20,10 +33,12 @@ namespace ChessLogic.Pieces
         public bool CastlingLong { get; set; }
         public bool CastlingShort { get; set; }
         public string FENsymbol { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
 
         public List<int[]> availableMoves(Board.Game board)
         {
-            int x = -1, y = -1;
+            /*int x = -1, y = -1;
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -34,7 +49,7 @@ namespace ChessLogic.Pieces
                         y = j;
                     }
                 }
-            }
+            }*/
 
             List<int[]> availableMoves = new List<int[]>();
 
@@ -193,7 +208,7 @@ namespace ChessLogic.Pieces
 
         public Piece copy()
         {
-            return new King(Color);
+            return new King(Color, x, y);
         }
     }
 }

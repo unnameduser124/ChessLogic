@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ChessLogic.Pieces
 {
@@ -10,18 +11,31 @@ namespace ChessLogic.Pieces
             FENsymbol = "p";
             Name = "pawn";
             this.Color = Color;
+            x = -1;
+            y = -1;
+        }
+        public Pawn(string Color, int x, int y)
+        {
+            NotationName = "";
+            FENsymbol = "p";
+            Name = "pawn";
+            this.Color = Color;
+            this.x = x;
+            this.y = y;
         }
 
         public string NotationName { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
         public string FENsymbol { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
 
         public bool EnPassant { get; set; }
 
         public List<int[]> availableMoves(Board.Game board)
         {
-            int x = -1, y = -1;
+            /*int x = -1, y = -1;
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -32,7 +46,7 @@ namespace ChessLogic.Pieces
                         y = j;
                     }
                 }
-            }
+            }*/
 
             List<int[]> availableMoves = new List<int[]>();
 
@@ -174,7 +188,7 @@ namespace ChessLogic.Pieces
 
         public Piece copy()
         {
-            var newPawn = new Pawn(Color);
+            var newPawn = new Pawn(Color, x, y);
             newPawn.EnPassant = EnPassant;
             return newPawn;
         }
