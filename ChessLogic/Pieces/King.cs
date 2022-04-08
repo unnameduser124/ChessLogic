@@ -9,7 +9,7 @@ namespace ChessLogic.Pieces
         {
             NotationName = "K";
             FENsymbol = "k";
-            Name = "King";
+            Name = "king";
             CastlingLong = true;
             CastlingShort = true;
             this.Color = Color;
@@ -135,23 +135,31 @@ namespace ChessLogic.Pieces
             {
                 if (CastlingLong)
                 {
-                    if (board.ChessBoard[x - 1, y] == null && board.ChessBoard[x - 2, y] == null && board.ChessBoard[x - 3, y] == null)
+                    if(y==7 && y == 0)
                     {
-                        if (!(availableMovesContains(new int[] { x - 1, y }, board, x, y) || availableMovesContains(new int[] { x - 2, y }, board, x, y)))
+                        if (board.ChessBoard[x - 1, y] == null && board.ChessBoard[x - 2, y] == null && board.ChessBoard[x - 3, y] == null)
                         {
-                            availableMoves.Add(new int[] { 2, y });
+                            if (!(availableMovesContains(new int[] { x - 1, y }, board, x, y) || availableMovesContains(new int[] { x - 2, y }, board, x, y)))
+                            {
+                                availableMoves.Add(new int[] { 2, y });
+                            }
                         }
                     }
+                    
                 }
                 if (CastlingShort)
                 {
-                    if (board.ChessBoard[x + 1, y] == null && board.ChessBoard[x + 2, y] == null)
+                    if (y == 7 && y == 0)
                     {
-                        if (!(availableMovesContains(new int[] { x + 1, y }, board, x, y) || availableMovesContains(new int[] { x + 2, y }, board, x, y)))
+                        if (board.ChessBoard[x + 1, y] == null && board.ChessBoard[x + 2, y] == null)
                         {
-                            availableMoves.Add(new int[] { 6, y });
+                            if (!(availableMovesContains(new int[] { x + 1, y }, board, x, y) || availableMovesContains(new int[] { x + 2, y }, board, x, y)))
+                            {
+                                availableMoves.Add(new int[] { 6, y });
+                            }
                         }
                     }
+                    
                 }
             }
 

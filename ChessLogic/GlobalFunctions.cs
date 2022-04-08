@@ -24,7 +24,7 @@ public class GlobalFunctions
                     if (freeSquareCounter > 0)
                     {
                         fen += freeSquareCounter.ToString();
-                        if (game.ChessBoard[j, i].Color.ToLower() == "white")
+                        if (game.ChessBoard[j, i].Color == "white")
                         {
                             fen += game.ChessBoard[j, i].FENsymbol.ToUpper();
                         }
@@ -36,7 +36,7 @@ public class GlobalFunctions
                     }
                     else
                     {
-                        if (game.ChessBoard[j, i].Color.ToLower() == "white")
+                        if (game.ChessBoard[j, i].Color == "white")
                         {
                             fen += game.ChessBoard[j, i].FENsymbol.ToUpper();
                         }
@@ -67,7 +67,7 @@ public class GlobalFunctions
         }
         var whiteKing = game.findKing("white");
         var blackKing = game.findKing("black");
-        if (whiteKing.Color.ToLower() != "none")
+        if (whiteKing.Color != "none")
         {
             if (whiteKing.CastlingShort)
             {
@@ -78,7 +78,7 @@ public class GlobalFunctions
                 fen += "Q";
             }
         }
-        if (blackKing.Color.ToLower() != "none")
+        if (blackKing.Color != "none")
         {
             if (blackKing.CastlingShort)
             {
@@ -110,12 +110,12 @@ public class GlobalFunctions
             {
                 if (game.ChessBoard[i, j] != null)
                 {
-                    if (game.ChessBoard[i, j].Name.ToLower() == "pawn")
+                    if (game.ChessBoard[i, j].Name == "pawn")
                     {
                         var pawn = game.ChessBoard[i, j] as Pawn;
                         if (pawn.EnPassant)
                         {
-                            if (pawn.Color.ToLower() == "white")
+                            if (pawn.Color == "white")
                             {
                                 fen += $"{convertCordToChar(i)}{j}";
                             }
@@ -484,7 +484,7 @@ public class GlobalFunctions
                         {
                             if(game.ChessBoard[column, row] != null)
                             {
-                                if(game.ChessBoard[column, row].Name.ToLower() == "pawn")
+                                if(game.ChessBoard[column, row].Name == "pawn")
                                 {
                                     var position = cordToIntArray(tempText.Substring(0, 2));
                                     foreach(var move in game.ChessBoard[column, row].availableMoves(game))

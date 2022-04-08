@@ -8,7 +8,7 @@ namespace ChessLogic.Pieces
         {
             NotationName = "";
             FENsymbol = "p";
-            Name = "Pawn";
+            Name = "pawn";
             this.Color = Color;
         }
 
