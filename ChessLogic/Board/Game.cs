@@ -82,11 +82,13 @@ namespace ChessLogic.Board
             ChessBoard[4, 0] = new King("white", 4, 0);
             ChessBoard[3, 7] = new Queen("black", 3, 7);
             ChessBoard[4, 7] = new King("black", 4, 7);
+
+            savePosition();
         }
 
         public bool movePiece(int fromX, int fromY, int toX, int toY, string promotion = "")
         {
-            gameStatusCheck(fromX, fromY, toX, toY);
+            gameStatusCheck();
             if (gameStatus == GameStatus.inProgress)
             {
                 //checking if moved piece is in the right color
@@ -116,7 +118,6 @@ namespace ChessLogic.Board
                                     {
                                         //actions performed if a piece is captured
                                         MoveHistory.Add(new Move(fromX, fromY, toX, toY, piece.NotationName, turnCounter, destination.copy()));
-                                        savePosition();
                                         ChessBoard[toX, toY] = null;
                                         pawnPromotion(fromX, fromY, toY, promotion);
                                     }
@@ -124,7 +125,6 @@ namespace ChessLogic.Board
                                     {
                                         //actions performed if a piece is moved to an empty square 
                                         MoveHistory.Add(new Move(fromX, fromY, toX, toY, piece.NotationName, turnCounter));
-                                        savePosition();
                                         castleCheck(fromX, fromY, toX, toY);
                                         EnPassantCheck(fromX, fromY, toX, toY);
                                         pawnPromotion(fromX, fromY, toY, promotion);
@@ -134,19 +134,22 @@ namespace ChessLogic.Board
                                     (ChessBoard[fromX, fromY], ChessBoard[toX, toY]) = (ChessBoard[toX, toY], ChessBoard[fromX, fromY]);
                                     ChessBoard[toX, toY].x = toX;
                                     ChessBoard[toX, toY].y = toY;
+                                    savePosition();
+
                                     if (!moveValidation(fromX, fromY, toX, toY))
                                     {
                                         return false;
                                     }
-
                                     castlingRights(fromX, fromY, toX, toY);
                                     enPassantCancel();
 
                                     whiteTurn = !whiteTurn;
+
                                     if (!whiteTurn)
                                     {
                                         turnCounter++;
                                     }
+
                                     if (MoveHistory.Last().pieceCaptured == null && MoveHistory.Last().pieceName != "")
                                     {
                                         movesSinceLastCapture++;
@@ -163,6 +166,7 @@ namespace ChessLogic.Board
                                     }
 
                                     //external function
+                                    gameStatusCheck();
                                     return true;
                                 }
                                 break;
@@ -357,12 +361,11 @@ namespace ChessLogic.Board
             return true;
         }
 
-        void gameStatusCheck(int fromX, int fromY, int toX, int toY)
+        void gameStatusCheck()
         {
             if (turnCounter >= 0)
             {
-                //Console.WriteLine($"{ChessBoard[fromX, fromY].NotationName}{(char)(fromX + 97)}{fromY + 1} to {ChessBoard[fromX, fromY].NotationName}{(char)(toX + 97)}{toY + 1} ");
-                if (positionDrawCheck())
+                if (repetitionDrawCheck())
                 {
                     gameStatus = GameStatus.draw;
                 }
@@ -469,7 +472,6 @@ namespace ChessLogic.Board
                     ChessBoard[fromX, fromY] = new Pawn(ChessBoard[fromX, fromY].Color, fromX, fromY);
                     ChessBoard[toX, toY] = MoveHistory.Last().pieceCaptured;
                 }
-
                 MoveHistory.Remove(MoveHistory.Last());
                 PositionHistory.Remove(PositionHistory.Last());
             }
@@ -633,7 +635,7 @@ namespace ChessLogic.Board
             return false;
         }
 
-        bool positionDrawCheck()
+        bool repetitionDrawCheck()
         {
             if (PositionHistory.Any())
             {
@@ -646,7 +648,6 @@ namespace ChessLogic.Board
                         positionCounter++;
                         if (positionCounter > 2)
                         {
-                            Console.WriteLine(position);
                             return true;
                         }
                     }
@@ -1021,8 +1022,7 @@ namespace ChessLogic.Board
         void savePosition()
         {
             var fen = GlobalFunctions.FEN(this);
-
-            var justPositionfen = fen.Remove(fen.Length - 13, 13);
+            var justPositionfen = fen.Remove(fen.IndexOf(' '), fen.Length- fen.IndexOf(' '));
             PositionHistory.Add(justPositionfen);
         }
 

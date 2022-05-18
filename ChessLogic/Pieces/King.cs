@@ -150,7 +150,7 @@ namespace ChessLogic.Pieces
             {
                 if (CastlingLong)
                 {
-                    if(y==7 && y == 0)
+                    if(y==7 || y == 0)
                     {
                         if (board.ChessBoard[x - 1, y] == null && board.ChessBoard[x - 2, y] == null && board.ChessBoard[x - 3, y] == null)
                         {
@@ -164,7 +164,7 @@ namespace ChessLogic.Pieces
                 }
                 if (CastlingShort)
                 {
-                    if (y == 7 && y == 0)
+                    if (y == 7 || y == 0)
                     {
                         if (board.ChessBoard[x + 1, y] == null && board.ChessBoard[x + 2, y] == null)
                         {
