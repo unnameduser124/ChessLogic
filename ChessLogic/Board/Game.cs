@@ -1,4 +1,6 @@
-﻿using ChessLogic.Pieces;
+﻿using ChessLogic.Notation;
+using ChessLogic.Pieces;
+using ChessLogic.Rules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,7 @@ namespace ChessLogic.Board
             gameStatus = GameStatus.inProgress;
             if (position != "")
             {
-                setupFromFEN(position);
+                NotationGenerator.setupFromFEN(position, this);
             }
             else
             {
@@ -119,15 +121,15 @@ namespace ChessLogic.Board
                                         //actions performed if a piece is captured
                                         MoveHistory.Add(new Move(fromX, fromY, toX, toY, piece.NotationName, turnCounter, destination.copy()));
                                         ChessBoard[toX, toY] = null;
-                                        pawnPromotion(fromX, fromY, toY, promotion);
+                                        SpecialMoves.pawnPromotion(fromX, fromY, toY, promotion, this);
                                     }
                                     else
                                     {
                                         //actions performed if a piece is moved to an empty square 
                                         MoveHistory.Add(new Move(fromX, fromY, toX, toY, piece.NotationName, turnCounter));
-                                        castleCheck(fromX, fromY, toX, toY);
-                                        EnPassantCheck(fromX, fromY, toX, toY);
-                                        pawnPromotion(fromX, fromY, toY, promotion);
+                                        SpecialMoves.castleCheck(fromX, fromY, toX, toY, this);
+                                        SpecialMoves.EnPassantCheck(fromX, fromY, toX, toY, this);
+                                        SpecialMoves.pawnPromotion(fromX, fromY, toY, promotion, this);
                                     }
                                     ChessBoard[toX, toY] = null;
                                     //actually moving a piece (swap of values in the board array)
@@ -140,8 +142,8 @@ namespace ChessLogic.Board
                                     {
                                         return false;
                                     }
-                                    castlingRights(fromX, fromY, toX, toY);
-                                    enPassantCancel();
+                                    SpecialMoves.castlingRights(fromX, fromY, toX, toY, this);
+                                    SpecialMoves.enPassantCancel(this);
 
                                     whiteTurn = !whiteTurn;
 
@@ -160,7 +162,7 @@ namespace ChessLogic.Board
                                     }
 
 
-                                    if (checkwhite() || checkblack())
+                                    if (StatusCheck.checkwhite(this) || StatusCheck.checkblack(this))
                                     {
                                         MoveHistory.Last().Check = true;
                                     }
@@ -174,7 +176,7 @@ namespace ChessLogic.Board
                         }
                     }
                 }
-                enPassantCancel();
+                SpecialMoves.enPassantCancel(this);
                 return false;
             }
 
@@ -182,180 +184,13 @@ namespace ChessLogic.Board
             return false;
         }
 
-        void EnPassantCheck(int fromX, int fromY, int toX, int toY)
-        {
-            if (ChessBoard[fromX, fromY].Name == "pawn")
-            {
-                //after a pawn moves two spaces up or down the board (depending on color) it's attribute "EnPassant" changes to true
-                if (fromY + 2 == toY || fromY - 2 == toY)
-                {
-                    (ChessBoard[fromX, fromY] as Pawn).EnPassant = true;
-                }
-
-                if (toX - 1 == fromX || toX + 1 == fromX)
-                {
-                    //doing en passant, meaning actually capturing a pawn
-                    if (ChessBoard[fromX, fromY].Color == "white")
-                    {
-                        if (ChessBoard[toX, toY - 1] != null)
-                        {
-                            MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY - 1].copy();
-                            ChessBoard[toX, toY - 1] = null;
-                        }
-
-
-                    }
-                    else if (ChessBoard[fromX, fromY].Color == "black")
-                    {
-                        if (ChessBoard[toX, toY + 1] != null)
-                        {
-                            MoveHistory.Last().pieceCaptured = ChessBoard[toX, toY + 1].copy();
-                            ChessBoard[toX, toY + 1] = null;
-                        }
-                    }
-                }
-
-
-
-            }
-        }
-
-        void castlingRights(int fromX, int fromY, int toX, int toY)
-        {
-            //revoking king's castling rights when it moves
-            if (ChessBoard[toX, toY].Name == "king")
-            {
-                (ChessBoard[toX, toY] as King).CastlingLong = false;
-                (ChessBoard[toX, toY] as King).CastlingShort = false;
-            }
-            //revoking king's castling rights if it's color rook moves
-            else if (ChessBoard[toX, toY].Name == "rook")
-            {
-                if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 0, 0 }))
-                {
-                    if (ChessBoard[4, 0] != null)
-                    {
-                        if (ChessBoard[4, 0].Name == "king")
-                        {
-                            (ChessBoard[4, 0] as King).CastlingLong = false;
-                        }
-                    }
-                }
-                else if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 7, 0 }))
-                {
-                    if (ChessBoard[4, 0] != null)
-                    {
-                        if (ChessBoard[4, 0].Name == "king")
-                        {
-                            (ChessBoard[4, 0] as King).CastlingShort = false;
-                        }
-                    }
-                }
-                else if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 0, 7 }))
-                {
-                    if (ChessBoard[4, 7] != null)
-                    {
-                        if (ChessBoard[4, 7].Name == "king")
-                        {
-                            (ChessBoard[4, 7] as King).CastlingLong = false;
-                        }
-                    }
-                }
-                else if (new int[] { fromX, fromY }.SequenceEqual(new int[] { 7, 7 }))
-                {
-                    if (ChessBoard[4, 7] != null)
-                    {
-                        if (ChessBoard[4, 7].Name == "king")
-                        {
-                            (ChessBoard[4, 7] as King).CastlingShort = false;
-                        }
-                    }
-                }
-            }
-        }
-
-        void castleCheck(int fromX, int fromY, int toX, int toY)
-        {
-            //castling, meaning moving rook to proper square depending whether it is a long or short castle
-            if (ChessBoard[fromX, fromY] != null)
-            {
-                if (ChessBoard[fromX, fromY].Name == "king" && fromX - 2 == toX)
-                {
-                    if ((ChessBoard[fromX, fromY].Color == "white" && checkwhite()) || (ChessBoard[fromX, fromY].Color == "black" && checkblack()))
-                    {
-                        return;
-                    }
-                    (ChessBoard[fromX - 4, fromY], ChessBoard[toX + 1, toY]) = (ChessBoard[toX + 1, toY], ChessBoard[fromX - 4, fromY]);
-                    ChessBoard[toX + 1, toY].x = toX + 1;
-                    MoveHistory.Last().Castling = true;
-                }
-                else if (ChessBoard[fromX, fromY].Name == "king" && fromX + 2 == toX)
-                {
-                    if ((ChessBoard[fromX, fromY].Color == "white" && checkwhite()) || (ChessBoard[fromX, fromY].Color == "black" && checkblack()))
-                    {
-                        return;
-                    }
-                    (ChessBoard[fromX + 3, fromY], ChessBoard[toX - 1, toY]) = (ChessBoard[toX - 1, toY], ChessBoard[fromX + 3, fromY]);
-                    ChessBoard[toX - 1, toY].x = toX - 1;
-                    MoveHistory.Last().Castling = true;
-                }
-            }
-        }
-
-        void pawnPromotion(int fromX, int fromY, int toY, string promotion)
-        {
-            //promoting a pawn if it moves to 8th or 1st rank based on desired piece provided in 'promotion' parameter
-            var movedPiece = ChessBoard[fromX, fromY];
-            if (movedPiece != null)
-            {
-                if (movedPiece.Name == "pawn" && (toY == 7 || toY == 0))
-                {
-                    if (promotion == "queen")
-                    {
-                        ChessBoard[fromX, fromY] = new Queen(movedPiece.Color, fromX, fromY);
-                    }
-                    else if (promotion == "knight")
-                    {
-                        ChessBoard[fromX, fromY] = new Knight(movedPiece.Color, fromX, fromY);
-                    }
-                    else if (promotion == "rook")
-                    {
-                        ChessBoard[fromX, fromY] = new Rook(movedPiece.Color, fromX, fromY);
-                    }
-                    else if (promotion == "bishop")
-                    {
-                        ChessBoard[fromX, fromY] = new Bishop(movedPiece.Color, fromX, fromY);
-                    }
-                    else
-                    {
-                        MoveHistory.Last().piecePromoted = null;
-                        return;
-                    }
-                    MoveHistory.Last().piecePromoted = ChessBoard[fromX, fromY];
-                }
-            }
-
-        }
+        
 
         bool moveValidation(int fromX, int fromY, int toX, int toY)
         {
-            //checks if move was valid
-            if ((checkwhite() && ChessBoard[toX, toY].Color == "white") || (checkblack() && ChessBoard[toX, toY].Color == "black"))
-            {
-                undoMove();
-                if (ChessBoard[fromX, fromY].Name == "pawn")
-                {
-                    (ChessBoard[fromX, fromY] as Pawn).EnPassant = false;
 
-                }
-                enPassantCancel();
-                return false;
-            }
-            //rolls back pawn move if it was moved to 8ht or 1st rank and not promoted ('promotion' parameter is empty)
-            else if ((toY == 7 || toY == 0) && ChessBoard[toX, toY].Name == "pawn")
+            if(!MoveValidation.kingInCheckValidation(fromX, fromY, toX, toY, this) || !MoveValidation.pawnPromotionValidation(toX, toY, this))
             {
-                undoMove();
-                enPassantCancel();
                 return false;
             }
             return true;
@@ -365,15 +200,15 @@ namespace ChessLogic.Board
         {
             if (turnCounter >= 0)
             {
-                if (repetitionDrawCheck())
+                if (StatusCheck.repetitionDraw(this))
                 {
                     gameStatus = GameStatus.draw;
                 }
-                else if (stalemate())
+                else if (StatusCheck.stalemate(this))
                 {
                     gameStatus = GameStatus.draw;
                 }
-                else if (checkmate())
+                else if (StatusCheck.checkmate(this))
                 {
 
                     if (whiteTurn)
@@ -391,7 +226,7 @@ namespace ChessLogic.Board
                 {
                     gameStatus = GameStatus.draw;
                 }
-                else if (insufficientMaterial())
+                else if (StatusCheck.insufficientMaterial(this))
                 {
                     gameStatus = GameStatus.draw;
                 }
@@ -477,31 +312,6 @@ namespace ChessLogic.Board
             }
         }
 
-        public void enPassantCancel()
-        {
-            if (MoveHistory.Any())
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (ChessBoard[i, j] != null)
-                        {
-                            if (ChessBoard[i, j].Name == "pawn")
-                            {
-                                var pawn = ChessBoard[i, j] as Pawn;
-                                if (pawn.EnPassant && MoveHistory.Last().toX != i || MoveHistory.Last().toY != j)
-                                {
-                                    pawn.EnPassant = false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
         public King findKing(string color)
         {
             for (int i = 0; i < 8; i++)
@@ -520,508 +330,9 @@ namespace ChessLogic.Board
             return new King("none");
         }
 
-        public bool checkwhite()
-        {
-            int[] whiteKingPosition = null;
-
-            //searches for white and black king position
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (ChessBoard[i, j] != null)
-                    {
-                        if (ChessBoard[i, j].Name == "king")
-                        {
-                            if (ChessBoard[i, j].Color == "white")
-                            {
-                                whiteKingPosition = new int[] { i, j };
-                            }
-                        }
-
-                        if (whiteKingPosition != null)
-                        {
-                            break;
-                        }
-                    }
-                }
-                if (whiteKingPosition != null)
-                {
-                    break;
-                }
-            }
-
-            //returns false if either black or white king was not found
-            if (whiteKingPosition == null)
-            {
-                return false;
-            }
-
-            //checks if any of the pieces one the boards attacks opponent's king
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (ChessBoard[i, j] != null)
-                    {
-                        foreach (var move in ChessBoard[i, j].availableMoves(this))
-                        {
-                            if (move.SequenceEqual(whiteKingPosition))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-        public bool checkblack()
-        {
-            int[] blackKingPosition = null;
-
-            //searches for white and black king position
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (ChessBoard[i, j] != null)
-                    {
-                        if (ChessBoard[i, j].Name == "king")
-                        {
-                            if (ChessBoard[i, j].Color == "black")
-                            {
-                                blackKingPosition = new int[] { i, j };
-                            }
-                        }
-
-                        if (blackKingPosition != null)
-                        {
-                            break;
-                        }
-                    }
-                }
-                if (blackKingPosition != null)
-                {
-                    break;
-                }
-            }
-
-            //returns false if either black or white king was not found
-            if (blackKingPosition == null)
-            {
-                return false;
-            }
-
-            //checks if any of the pieces one the boards attacks opponent's king
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (ChessBoard[i, j] != null)
-                    {
-                        foreach (var move in ChessBoard[i, j].availableMoves(this))
-                        {
-                            if (move.SequenceEqual(blackKingPosition))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        bool repetitionDrawCheck()
-        {
-            if (PositionHistory.Any())
-            {
-                var positionChecked = PositionHistory.Last();
-                int positionCounter = 0;
-                foreach (var position in PositionHistory)
-                {
-                    if (positionChecked == position)
-                    {
-                        positionCounter++;
-                        if (positionCounter > 2)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public bool checkmate()
-        {
-            if (!checkblack() && !checkwhite())
-            {
-                return false;
-            }
-            var clonedBoard = clone();
-            clonedBoard.gameStatus = GameStatus.inProgress;
-            clonedBoard.turnCounter = -10;
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    var piece = clonedBoard.ChessBoard[i, j];
-                    if (piece != null)
-                    {
-                        if (piece.Color == "white" && clonedBoard.whiteTurn)
-                        {
-                            foreach (var move in piece.availableMoves(clonedBoard))
-                            {
-                                if (clonedBoard.movePiece(i, j, move[0], move[1]))
-                                {
-                                    return false;
-                                }
-                                if(piece.Name == "pawn" && move[1] == 7)
-                                {
-                                    if (clonedBoard.movePiece(i, j, move[0], move[1], "queen"))
-                                    {
-                                        return false;
-                                    }
-                                    else if (clonedBoard.movePiece(i, j, move[0], move[1], "rook"))
-                                    {
-                                        return false;
-                                    }
-                                    else if (clonedBoard.movePiece(i, j, move[0], move[1], "knight"))
-                                    {
-                                        return false;
-                                    }
-                                    else if (clonedBoard.movePiece(i, j, move[0], move[1], "bishop"))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                        else if (piece.Color == "black" && !clonedBoard.whiteTurn)
-                        {
-                            foreach (var move in piece.availableMoves(clonedBoard))
-                            {
-                                if (clonedBoard.movePiece(i, j, move[0], move[1]))
-                                {
-                                    return false;
-                                }
-                                if (piece.Name == "pawn" && move[1] == 0)
-                                {
-                                    if (clonedBoard.movePiece(i, j, move[0], move[1], "queen"))
-                                    {
-                                        return false;
-                                    }
-                                    else if (clonedBoard.movePiece(i, j, move[0], move[1], "rook"))
-                                    {
-                                        return false;
-                                    }
-                                    else if (clonedBoard.movePiece(i, j, move[0], move[1], "knight"))
-                                    {
-                                        return false;
-                                    }
-                                    else if (clonedBoard.movePiece(i, j, move[0], move[1], "bishop"))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        bool stalemate()
-        {
-            if (checkblack() || checkwhite())
-            {
-                return false;
-            }
-            var clonedBoard = clone();
-            clonedBoard.gameStatus = GameStatus.inProgress;
-            clonedBoard.turnCounter = -10;
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    var piece = clonedBoard.ChessBoard[i, j];
-                    if (piece != null)
-                    {
-                        if (piece.Color == "white" && clonedBoard.whiteTurn)
-                        {
-                            foreach (var move in piece.availableMoves(clonedBoard))
-                            {
-                                if (clonedBoard.movePiece(i, j, move[0], move[1]))
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                        else if (piece.Color == "black" && !clonedBoard.whiteTurn)
-                        {
-                            foreach (var move in piece.availableMoves(clonedBoard))
-                            {
-                                if (clonedBoard.movePiece(i, j, move[0], move[1]))
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        bool insufficientMaterial()
-        {
-            int knightCounter = 0;
-            string bishopColor = "";
-            for(int i=0; i<8; i++)
-            {
-                for(int j=0; j < 8; j++)
-                {
-                    if (ChessBoard[i, j] != null)
-                    {
-                        if(ChessBoard[i,j].Name == "pawn")
-                        {
-                            return false;
-                        }
-                        else if (ChessBoard[i, j].Name == "rook")
-                        {
-                            return false;
-                        }
-                        else if (ChessBoard[i, j].Name == "queen")
-                        {
-                            return false;
-                        }
-                        else if (ChessBoard[i, j].Name == "bishop")
-                        {
-                            if (bishopColor == "")
-                            {
-                                if (i % 2 == j % 2)
-                                {
-                                    bishopColor = "black";
-                                }
-                                else
-                                {
-                                    bishopColor = "white";
-                                }
-                            }
-                            else
-                            {
-                                if(bishopColor == "white" && i % 2 == j % 2)
-                                {
-                                    return false;
-                                }
-                                else if(bishopColor == "black" && i % 2 != j % 2)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                        else if(ChessBoard[i,j].Name == "knight")
-                        {
-                            knightCounter++;
-                            if (knightCounter > 1)
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        void setupFromFEN(string fen)
-        {
-            var column = 0;
-            var row = 7;
-            var index = 0;
-            foreach (var item in fen)
-            {
-                if (item == 'k')
-                {
-                    ChessBoard[column, row] = new King("black", column, row);
-                    column++;
-                }
-                else if (item == 'K')
-                {
-                    ChessBoard[column, row] = new King("white", column, row);
-                    column++;
-                }
-                else if (item == 'q')
-                {
-                    ChessBoard[column, row] = new Queen("black", column, row);
-                    column++;
-                }
-                else if (item == 'Q')
-                {
-                    ChessBoard[column, row] = new Queen("white", column, row);
-                    column++;
-                }
-                else if (item == 'b')
-                {
-                    ChessBoard[column, row] = new Bishop("black", column, row);
-                    column++;
-                }
-                else if (item == 'B')
-                {
-                    ChessBoard[column, row] = new Bishop("white", column, row);
-                    column++;
-                }
-                else if (item == 'n')
-                {
-                    ChessBoard[column, row] = new Knight("black", column, row);
-                    column++;
-                }
-                else if (item == 'N')
-                {
-                    ChessBoard[column, row] = new Knight("white", column, row);
-                    column++;
-                }
-                else if (item == 'p')
-                {
-                    ChessBoard[column, row] = new Pawn("black", column, row);
-                    column++;
-                }
-                else if (item == 'P')
-                {
-                    ChessBoard[column, row] = new Pawn("white", column, row);
-                    column++;
-                }
-                else if (item == 'r')
-                {
-                    ChessBoard[column, row] = new Rook("black", column, row);
-                    column++;
-                }
-                else if (item == 'R')
-                {
-                    ChessBoard[column, row] = new Rook("white", column, row);
-                    column++;
-                }
-                else if (item == '/')
-                {
-                    column = 0;
-                    row--;
-                }
-                else
-                {
-                    column += item - '0';
-                }
-                if (item == ' ')
-                {
-                    index = fen.IndexOf(item);
-                    break;
-                }
-            }
-
-            whiteTurn = fen[++index] == 'w';
-            index++;
-
-            var kingwhite = findKing("white");
-            var kingblack = findKing("black");
-            if (kingwhite.Color != "none")
-            {
-                kingwhite.CastlingLong = false;
-                kingwhite.CastlingShort = false;
-            }
-            if (kingblack.Color != "none")
-            {
-                kingblack.CastlingLong = false;
-                kingblack.CastlingShort = false;
-            }
-            while (fen[++index] != ' ')
-            {
-                if (fen[index] == 'K')
-                {
-                    if (kingwhite.Color != "none")
-                    {
-                        kingwhite.CastlingShort = true;
-                    }
-                }
-                else if (fen[index] == 'k')
-                {
-                    if (kingblack.Color != "none")
-                    {
-                        kingblack.CastlingShort = true;
-                    }
-                }
-                else if (fen[index] == 'Q')
-                {
-                    if (kingwhite.Color != "none")
-                    {
-                        kingwhite.CastlingLong = true;
-                    }
-                }
-                else if (fen[index] == 'q')
-                {
-                    if (kingblack.Color != "none")
-                    {
-                        kingblack.CastlingLong = true;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-
-            }
-
-            index = fen.Length;
-            var movesString = "";
-            while (fen[--index] != ' ')
-            {
-                movesString += fen[index];
-            }
-            movesString = GlobalFunctions.Reverse(movesString);
-            turnCounter = int.Parse(movesString);
-            movesString = "";
-            while (fen[--index] != ' ')
-            {
-                movesString += fen[index];
-            }
-            movesString = GlobalFunctions.Reverse(movesString);
-            movesSinceLastCapture = int.Parse(movesString);
-
-            movesString = "";
-            while (fen[--index] != ' ')
-            {
-                movesString += fen[index];
-            }
-            movesString = GlobalFunctions.Reverse(movesString);
-            if (movesString != "-")
-            {
-                var enPassantPosition = GlobalFunctions.cordToIntArray(movesString);
-                if (ChessBoard[enPassantPosition[0], enPassantPosition[1] - 1] != null)
-                {
-                    if (ChessBoard[enPassantPosition[0], enPassantPosition[1] - 1].Name == "pawn")
-                    {
-                        (ChessBoard[enPassantPosition[0], enPassantPosition[1] - 1] as Pawn).EnPassant = true;
-                    }
-                }
-                else if (ChessBoard[enPassantPosition[0], enPassantPosition[1] + 1] != null)
-                {
-                    if (ChessBoard[enPassantPosition[0], enPassantPosition[1] + 1].Name == "pawn")
-                    {
-                        (ChessBoard[enPassantPosition[0], enPassantPosition[1] + 1] as Pawn).EnPassant = true;
-                    }
-                }
-            }
-
-        }
-
         void savePosition()
         {
-            var fen = GlobalFunctions.FEN(this);
+            var fen = NotationGenerator.FEN(this);
             var justPositionfen = fen.Remove(fen.IndexOf(' '), fen.Length- fen.IndexOf(' '));
             PositionHistory.Add(justPositionfen);
         }

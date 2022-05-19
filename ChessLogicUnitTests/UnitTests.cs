@@ -245,5 +245,31 @@ namespace ChessLogicUnitTests
 
             Assert.AreEqual(game.gameStatus, Game.GameStatus.draw);
         }
+
+        [TestMethod]
+
+        public void pawnPromotionWhite()
+        {
+            Game game = new Game("1k6/7P/1K6/8/8/8/8/8 w - - 0 1");
+
+            var moveSuccess = game.movePiece(7, 6, 7, 7, "queen");
+
+            var success = moveSuccess && game.ChessBoard[7, 7].Name == "queen";
+
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod]
+
+        public void pawnPromotionBlack()
+        {
+            Game game = new Game("8/8/1K6/8/8/8/1k5p/8 b - - 0 1");
+
+            var moveSuccess = game.movePiece(7, 1, 7, 0, "knight");
+
+            var success = moveSuccess && game.ChessBoard[7, 0].Name == "knight";
+
+            Assert.IsTrue(success);
+        }
     }
 }

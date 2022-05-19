@@ -1,4 +1,5 @@
 ﻿using ChessLogic.Board;
+using ChessLogic.Notation;
 using System;
 using System.Threading;
 
@@ -11,24 +12,6 @@ namespace ChessLogic
             /*var game = new Game();
             gameGenerator(game);*/
 
-            Game game = new Game();
-
-            game.movePiece(4, 1, 4, 3);
-
-            game.movePiece(1, 7, 2, 5);
-            game.movePiece(1, 0, 2, 2);
-            game.movePiece(2, 5, 1, 7);
-            game.movePiece(2, 2, 1, 0);
-
-            game.movePiece(1, 7, 2, 5);
-            game.movePiece(1, 0, 2, 2);
-            game.movePiece(2, 5, 1, 7);
-            game.movePiece(2, 2, 1, 0);
-            foreach (var position in game.PositionHistory)
-            {
-                Console.WriteLine("|" + position + "|");
-            }
-            Console.WriteLine(game.gameStatus == Game.GameStatus.draw);
             Console.ReadLine();
         }
 
@@ -88,7 +71,7 @@ namespace ChessLogic
                         }
                         else
                         {
-                            Console.WriteLine($"FEN: {GlobalFunctions.FEN(game)}");
+                            Console.WriteLine($"FEN: {NotationGenerator.FEN(game)}");
                         }
                     }
                 }
@@ -98,13 +81,13 @@ namespace ChessLogic
 
         static void gameGenerator(Game game)
         {
-            Console.WriteLine(GlobalFunctions.FEN(game));
+            Console.WriteLine(NotationGenerator.FEN(game));
             while (game.gameStatus == Board.Game.GameStatus.inProgress)
             {
                 randomMove(game);
             }
             Console.WriteLine(game.gameStatus);
-            Console.WriteLine(GlobalFunctions.generatePGN(game));
+            Console.WriteLine(NotationGenerator.generatePGN(game));
         }
     }
 }
