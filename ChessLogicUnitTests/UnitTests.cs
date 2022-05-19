@@ -1,6 +1,5 @@
 ﻿using ChessLogic.Board;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace ChessLogicUnitTests
 {
@@ -37,7 +36,7 @@ namespace ChessLogicUnitTests
 
             Assert.IsTrue(success);
         }
-        
+
         [TestMethod]
         public void PawnMoveOneSquareTestBlack()
         {
@@ -106,7 +105,7 @@ namespace ChessLogicUnitTests
 
             Assert.IsTrue(success);
         }
-        
+
         [TestMethod]
         public void castlingShortBlack()
         {

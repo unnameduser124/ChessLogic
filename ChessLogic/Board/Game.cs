@@ -184,12 +184,12 @@ namespace ChessLogic.Board
             return false;
         }
 
-        
+
 
         bool moveValidation(int fromX, int fromY, int toX, int toY)
         {
 
-            if(!MoveValidation.kingInCheckValidation(fromX, fromY, toX, toY, this) || !MoveValidation.pawnPromotionValidation(toX, toY, this))
+            if (!MoveValidation.kingInCheckValidation(fromX, fromY, toX, toY, this) || !MoveValidation.pawnPromotionValidation(toX, toY, this))
             {
                 return false;
             }
@@ -333,7 +333,7 @@ namespace ChessLogic.Board
         void savePosition()
         {
             var fen = NotationGenerator.FEN(this);
-            var justPositionfen = fen.Remove(fen.IndexOf(' '), fen.Length- fen.IndexOf(' '));
+            var justPositionfen = fen.Remove(fen.IndexOf(' '), fen.Length - fen.IndexOf(' '));
             PositionHistory.Add(justPositionfen);
         }
 

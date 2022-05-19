@@ -1,16 +1,12 @@
 ﻿using ChessLogic.Board;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ChessLogic.Board.Game;
 
 namespace ChessLogic.Rules
 {
     public abstract class StatusCheck
     {
-        
+
         public static bool checkwhite(Game game)
         {
             int[] whiteKingPosition = null;

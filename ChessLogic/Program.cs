@@ -25,7 +25,7 @@ namespace ChessLogic
                     if (game.ChessBoard[j, i] != null)
                     {
                         var piece = game.ChessBoard[j, i];
-                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1}|{convertCord(piece.x)}{piece.y+1} {piece.Color}");
+                        Console.WriteLine($"{piece.NotationName}{convertCord(j)}{i + 1}|{convertCord(piece.x)}{piece.y + 1} {piece.Color}");
                     }
                 }
             }

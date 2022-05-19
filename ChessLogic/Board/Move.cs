@@ -39,7 +39,7 @@ namespace ChessLogic.Board
 
         public override string ToString()
         {
-            return $"MOVE NUMBER: {turnNumber} FROM: {CoordinateConversion.convertCords(new int [] {fromX, fromY})}, TO: {CoordinateConversion.convertCords(new int[] { toX, toY })}";
+            return $"MOVE NUMBER: {turnNumber} FROM: {CoordinateConversion.convertCords(new int[] { fromX, fromY })}, TO: {CoordinateConversion.convertCords(new int[] { toX, toY })}";
         }
     }
 }
