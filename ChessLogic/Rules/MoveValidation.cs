@@ -7,7 +7,8 @@ namespace ChessLogic.Rules
     {
         public static bool kingInCheckValidation(int fromX, int fromY, int toX, int toY, Game game)
         {
-            if ((StatusCheck.checkwhite(game) && game.ChessBoard[toX, toY].Color == "white") || (StatusCheck.checkblack(game) && game.ChessBoard[toX, toY].Color == "black"))
+            if ((StatusCheck.checkwhite(game) && game.ChessBoard[toX, toY].Color == "white") || 
+                (StatusCheck.checkblack(game) && game.ChessBoard[toX, toY].Color == "black"))
             {
                 game.undoMove();
                 if (game.ChessBoard[fromX, fromY].Name == "pawn")

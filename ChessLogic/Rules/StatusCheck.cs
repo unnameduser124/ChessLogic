@@ -38,7 +38,7 @@ namespace ChessLogic.Rules
                 }
             }
 
-            //returns false if either black or white king was not found
+            //returns false if white king was not found
             if (whiteKingPosition == null)
             {
                 return false;
@@ -95,7 +95,7 @@ namespace ChessLogic.Rules
                 }
             }
 
-            //returns false if either black or white king was not found
+            //returns false if black king was not found
             if (blackKingPosition == null)
             {
                 return false;
